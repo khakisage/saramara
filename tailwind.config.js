@@ -10,12 +10,20 @@ export default {
       xl: "1280px",
       xl2: "1360px",
     },
-    extend: {},
+    extend: {
+      colors: {
+        first: "#222831",
+        second: "#393E46",
+        third: "#EA6236",
+        third2: "#EB7E5A",
+        fourth: "#EEEEEE",
+      },
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
     styled: true,
-    themes: ["emerald", "dark", "forest", "synthwave"],
+    themes: ["light"],
     base: true,
     utils: true,
     logs: true,

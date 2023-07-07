@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  color: #eeeeee;
+}
+@layer components {
+  /* .btn-primary {
+    @apply py-2 px-4 bg-third text-white font-semibold rounded-lg shadow-md hover:bg-third2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
+  } */
+}
+/* .drawer-content {
+  max-height: initial !important;
+  min-height: -webkit-fill-available;
+} */
