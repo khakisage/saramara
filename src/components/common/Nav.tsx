@@ -1,4 +1,3 @@
-import React from "react";
 import { MovePage } from "./utils";
 import { useRecoilState } from "recoil";
 import { loginState } from "../../store/atom";

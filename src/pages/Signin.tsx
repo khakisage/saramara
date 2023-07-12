@@ -1,16 +1,15 @@
 import React from "react";
 import { MovePage } from "../components/common/utils";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { emailState, loginState, passwordState } from "../store/atom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
-import { useNavigate } from "react-router";
 
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
   const [email, setEmail] = useRecoilState(emailState);
   const [password, setPassword] = useRecoilState(passwordState);
-  const [isLogin, setIsLogin] = useRecoilState(loginState);
+  const setIsLogin = useSetRecoilState(loginState);
   const moveMain = MovePage({ url: "/" });
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
