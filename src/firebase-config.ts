@@ -1,15 +1,26 @@
 import "firebase/compat/firestore";
-import firebase from "firebase/compat/app";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+
+// const firebaseConfig = {
+//   apikey: import.meta.env.VITE_APP_APIKEY,
+//   authDomain: import.meta.env.VITE_APP_AUTHDOMAIN,
+//   projectId: import.meta.env.VITE_APP_PROJECTID,
+//   storageBucket: import.meta.env.VITE_APP_STORAGEBUCKET,
+//   messagingSenderId: import.meta.env.VITE_APP_MESSAGINGSENDERID,
+//   appId: import.meta.env.VITE_APP_APPID,
+// };
 
 const firebaseConfig = {
-  apikey: import.meta.env.REACT_APP_APIKEY,
-  authDomain: import.meta.env.REACT_APP_AUTHDOMAIN,
-  projectId: import.meta.env.REACT_APP_PROJECTID,
-  storageBucket: import.meta.env.REACT_APP_STORAGEBUCKET,
-  messagingSenderId: import.meta.env.REACT_APP_MESSAGINGSENDERID,
-  appId: import.meta.env.REACT_APP_APPID,
+  apiKey: "AIzaSyB-y2kC-gE6gCQKyArOHdPkmSRT6UonLIg",
+  authDomain: "saramara-c629e.firebaseapp.com",
+  projectId: "saramara-c629e",
+  storageBucket: "saramara-c629e.appspot.com",
+  messagingSenderId: "609347642729",
+  appId: "1:609347642729:web:816d406769a0eddcebc9f8",
 };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+// const db = firebase.firestore();
 
-firebase.initializeApp(firebaseConfig);
-const firestore = firebase.firestore();
-export { firestore };
+export { auth };
