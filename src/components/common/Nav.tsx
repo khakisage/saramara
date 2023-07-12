@@ -1,10 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { MovePage } from "./utils";
+import { useRecoilState } from "recoil";
+import { loginState } from "../../store/atom";
 
 export default function Nav(): JSX.Element {
   const moveMain = MovePage({ url: "/" });
   const moveSignin = MovePage({ url: "/signin" });
+  const [isLogin, setIsLogin] = useRecoilState(loginState);
+  console.log("isLogin", isLogin);
   return (
     <div className="navbar bg-first">
       <div className="flex-1">
@@ -16,10 +19,15 @@ export default function Nav(): JSX.Element {
         <div className="form-control">
           <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto text-black" />
         </div>
-
-        <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={moveSignin}>
-          로그인
-        </button>
+        {isLogin === false ? (
+          <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={moveSignin}>
+            로그인
+          </button>
+        ) : (
+          <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => setIsLogin(false)}>
+            로그아웃
+          </button>
+        )}
       </div>
     </div>
   );
