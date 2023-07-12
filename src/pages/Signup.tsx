@@ -23,18 +23,30 @@ export default function Signup(): JSX.Element {
     }
   };
 
-  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (email !== "" && password !== "" && confirmPassword !== "" && password === confirmPassword) {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         console.log("회원가입에 성공하였습니다.");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
         moveSignin();
       } catch (error) {
         console.dir(error);
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
         alert("회원가입에 실패하였습니다.");
       }
     }
+  };
+
+  const resetInput = () => {
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   return (
@@ -44,7 +56,7 @@ export default function Signup(): JSX.Element {
           <h1 className="text-5xl font-bold text-first">회원가입</h1>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-          <form className="card-body" onSubmit={handleOnSubmit}>
+          <form className="card-body" onSubmit={handleOnSignup}>
             <div className="form-control">
               <label className="label">
                 <span className="label-text ">Email</span>
@@ -54,6 +66,7 @@ export default function Signup(): JSX.Element {
                 placeholder="email"
                 className="input input-bordered text-black"
                 name="email"
+                autoComplete="username"
                 value={email}
                 required
                 onChange={handleOnChange}
@@ -119,7 +132,7 @@ export default function Signup(): JSX.Element {
                   <div className="modal-box">
                     <h3 className="font-bold text-lg text-first">이메일 형식이 틀렸거나, 이미 존재합니다.</h3>
                     <div className="modal-action">
-                      <label htmlFor="confirm-modal" className="btn btn-outline">
+                      <label htmlFor="confirm-modal" className="btn btn-outline" onClick={resetInput}>
                         닫기
                       </label>
                     </div>
