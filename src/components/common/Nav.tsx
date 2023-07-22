@@ -31,7 +31,13 @@ export default function Nav(): JSX.Element {
           </button>
         ) : (
           <>
-            <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => setIsLogin(false)}>
+            <button
+              className="btn bg-third text-fourth hover:bg-third2 border-none"
+              onClick={() => {
+                setIsLogin(false);
+                navigate("/");
+              }}
+            >
               로그아웃
             </button>
             <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => navigate("/mypage")}>

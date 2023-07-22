@@ -50,7 +50,7 @@ export default function Signup(): JSX.Element {
   };
 
   return (
-    <div className="hero min-h-screen bg-base-200">
+    <div className="hero min-h-screen bg-second">
       <div className="hero-content flex-col">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-fourth">회원가입</h1>
