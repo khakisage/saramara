@@ -53,7 +53,7 @@ export default function Signup(): JSX.Element {
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-first">회원가입</h1>
+          <h1 className="text-5xl font-bold text-fourth">회원가입</h1>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
           <form className="card-body" onSubmit={handleOnSignup}>
