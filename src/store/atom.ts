@@ -23,3 +23,24 @@ export const confirmPasswordState = atom({
   key: "confirmPasswordState",
   default: "",
 });
+
+export const textState = atom({
+  key: "textState",
+  default: "",
+});
+
+export const articleState = atom({
+  key: "articleState",
+  default: {
+    title: "",
+    content: "",
+    category: "",
+    price: 0,
+    image: "" as string | ArrayBuffer | null,
+  },
+});
+
+export const fileState = atom({
+  key: "fileState",
+  default: null,
+});
