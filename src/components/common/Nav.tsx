@@ -15,7 +15,7 @@ export default function Nav(): JSX.Element {
   const [isLogin, setIsLogin] = useRecoilState(loginState);
   console.log("isLogin", isLogin);
   return (
-    <div className="navbar bg-first fixed">
+    <div className="navbar bg-first">
       <div className="flex-1">
         <button className="btn btn-ghost normal-case text-xl" onClick={moveMain}>
           사라마라
