@@ -3,6 +3,8 @@ import "react-quill/dist/quill.snow.css";
 import { useRecoilState } from "recoil";
 import { articleState } from "../store/atom";
 import ReactQuill from "react-quill";
+import { auth, db } from "../firebase-config";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function Post() {
   const modules = {
@@ -12,6 +14,9 @@ export default function Post() {
   const [article, setArticle] = useRecoilState(articleState);
   console.log("article", article);
   console.dir("setArticle", setArticle);
+  const user = auth.currentUser;
+  console.log("user", user);
+  const uid = user?.uid;
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "title") {
@@ -56,14 +61,33 @@ export default function Post() {
     };
   }, []);
 
+  const articleData = {
+    uid: uid,
+    title: article.title,
+    category: article.category,
+    price: article.price,
+    content: article.content,
+    image: article.image,
+  };
+  // firestore(db)에 데이터 저장
+  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      // firestore(db)에 데이터 저장
+      await addDoc(collection(db, "articles"), {
+        ...articleData,
+      });
+      // 게시글 작성 완료 후 페이지 이동
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   return (
     <div className="hero min-h-screen bg-second">
       <div className="hero-content flex-col w-max">
-        {/* <div className="text-left">
-          <h1 className=" text-5xl font-bold text-fourth ">게시글 작성</h1>
-        </div> */}
         <div className="card flex-shrink-0 max-w-xl shadow-2xl bg-base-100">
-          <form className="card-body ">
+          <form className="card-body " onSubmit={handleOnSubmit}>
             <div className="form-control" onChange={handleOnChange}>
               <label className="label" htmlFor="title">
                 <input type="text" id="title" name="title" placeholder="제목을 입력하세요." className="w-full text-first" />
@@ -72,10 +96,13 @@ export default function Post() {
             <div className="form-control" onChange={handleOnChange}>
               <label className="label" htmlFor="category">
                 <select id="category" name="category" className="w-full text-first select select-bordered max-w-xs">
-                  <option value="1">의류</option>
+                  <option value="1" selected>
+                    카테고리를 선택해주세요.
+                  </option>
                   <option value="2">신발</option>
                   <option value="3">모자</option>
                   <option value="4">악세사리</option>
+                  <option value="5">의류</option>
                 </select>
               </label>
             </div>
@@ -105,8 +132,15 @@ export default function Post() {
               <ReactQuill theme="snow" modules={modules} formats={formats} placeholder="내용을 입력해주세요" onChange={onChangeQuill} />
             </div>
             <div className="form-control mt-6 flex-row gap-1">
-              <label className="btn bg-third text-fourth hover:bg-third2 border-none w-1/2">등록</label>
-              <label className="btn bg-third text-fourth hover:bg-third2 border-none w-1/2">취소</label>
+              <button className="btn bg-third text-fourth hover:bg-third2 border-none w-full" type="submit">
+                등록
+              </button>
+              {/* <button
+                className="btn bg-third text-fourth hover:bg-third2 border-none w-1/2"
+                onClick={() => setArticle({ title: "", category: "", price: 0, content: "", image: null })}
+              >
+                취소
+              </button> */}
             </div>
           </form>
         </div>

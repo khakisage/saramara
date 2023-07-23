@@ -29,18 +29,40 @@ export const textState = atom({
   default: "",
 });
 
-export const articleState = atom({
+type ArticleState = {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  price: number;
+  image: string | ArrayBuffer | null;
+  comments: any[];
+};
+
+export const articleState = atom<ArticleState>({
   key: "articleState",
   default: {
+    id: "",
     title: "",
     content: "",
     category: "",
     price: 0,
-    image: "" as string | ArrayBuffer | null,
+    image: null,
+    comments: [],
   },
 });
 
 export const fileState = atom({
   key: "fileState",
   default: null,
+});
+
+export const articleListState = atom<ArticleState[]>({
+  key: "articleListState",
+  default: [],
+});
+
+export const pageState = atom({
+  key: "pageState",
+  default: 1,
 });
