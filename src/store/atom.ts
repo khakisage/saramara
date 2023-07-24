@@ -29,7 +29,7 @@ export const textState = atom({
   default: "",
 });
 
-type ArticleState = {
+export type ArticleState = {
   id: string;
   title: string;
   content: string;
