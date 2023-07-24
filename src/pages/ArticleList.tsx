@@ -38,16 +38,16 @@ export default function ArticleList(): JSX.Element {
   console.log("articleList", articleList);
   return (
     <div className="flex flex-col gap-4 min-h-screen bg-second ">
-      <div className="flex flex-col h-auto w-full justify-center items-center mt-20 gap-4">
+      <div className="flex flex-col h-auto w-full justify-center items-center mt-40 gap-4">
         {articleList.slice((page - 1) * 3, page * 3).map((article) => {
           return (
-            <div key={article.id} className="card w-1/2 h-56 bg-first shadow-xl flex-row">
+            <div key={article.id} className="card w-1/2 h-52 bg-first shadow-xl flex-row">
               <figure>
                 <img className="object-cover object-center w-full h-full" src={article.image} alt="Shoes" />
               </figure>
               <div className="card-body">
                 <h2 className="card-title">{article.title}</h2>
-                <p>{article.price}</p>
+                <p>{article.price.toLocaleString()} 원</p>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">더 보기</button>
                 </div>
