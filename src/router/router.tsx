@@ -13,12 +13,12 @@ const Router = (): JSX.Element => {
     <Routes>
       <Route path="*" element={<Error />} />
       <Route path="/" element={<Main />} />
-      <Route path="/list" element={<ArticleList />} />
-      <Route path="/post/new" element={<Post />} />
+      <Route path="/articles" element={<ArticleList />} />
+      <Route path="/articles/:articleId" element={<Article />} />
+      <Route path="/post" element={<Post />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/mypage" element={<Mypage />} />
-      <Route path="/post" element={<Article />} />
     </Routes>
   );
 };

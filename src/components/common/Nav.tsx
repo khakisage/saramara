@@ -43,7 +43,7 @@ export default function Nav(): JSX.Element {
             <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => navigate("/mypage")}>
               내 정보
             </button>
-            <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => navigate("/post/new")}>
+            <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => navigate("/post")}>
               글 작성
             </button>
           </>
