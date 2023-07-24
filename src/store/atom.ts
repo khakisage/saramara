@@ -66,3 +66,8 @@ export const pageState = atom({
   key: "pageState",
   default: 1,
 });
+
+export const articleSpecState = atom<ArticleState | undefined>({
+  key: "articleSpecState",
+  default: undefined,
+});
