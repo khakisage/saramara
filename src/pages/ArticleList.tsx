@@ -5,6 +5,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase-config";
 import Pagination from "react-js-pagination";
 import ".././assets/css/paging.css";
+import { useNavigate } from "react-router";
 
 type Article = {
   id: string;
@@ -15,10 +16,16 @@ type Article = {
   image: string | ArrayBuffer | null;
   comments: any[];
 };
+
 export default function ArticleList(): JSX.Element {
   const [articleList, setArticleList] = useRecoilState(articleListState);
   const [page, setPage] = useRecoilState(pageState);
   const [pageCount, setPageCount] = useState(0);
+  const navigate = useNavigate();
+  const moveToArticle = (articleId: string) => {
+    navigate(`/articles/${articleId}`);
+  };
+
   useEffect(() => {
     const fetchArticleList = async () => {
       const querySnapshot = await getDocs(collection(db, "articles"));
@@ -49,7 +56,9 @@ export default function ArticleList(): JSX.Element {
                 <h2 className="card-title">{article.title}</h2>
                 <p>{article.price.toLocaleString()} 원</p>
                 <div className="card-actions justify-end">
-                  <button className="btn btn-primary">더 보기</button>
+                  <button className="btn btn-primary" onClick={() => moveToArticle(article.id)}>
+                    더 보기
+                  </button>
                 </div>
               </div>
             </div>
