@@ -12,6 +12,7 @@ export const MovePage = ({ url }: { url: string }) => {
 
 type Article = {
   id: string;
+  uid: string;
   title: string;
   content: string;
   category: string;
