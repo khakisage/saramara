@@ -1,17 +1,19 @@
 import { MovePage } from "./utils";
-import { useRecoilState } from "recoil";
-import { loginState } from "../../store/atom";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { loginState, userState } from "../../store/atom";
 import { useNavigate } from "react-router";
 import { auth } from "../../firebase-config";
+import Search from "./Search";
 
 export default function Nav(): JSX.Element {
   const moveMain = MovePage({ url: "/" });
   const moveSignin = MovePage({ url: "/signin" });
   const navigate = useNavigate();
-  const user = auth.currentUser;
-  console.log("user", user);
-  const uid = user?.uid;
-  console.log("uid", uid);
+  const resetUserInfo = useResetRecoilState(userState);
+  // const user = auth.currentUser;
+  console.log("userinfo", useRecoilValue(userState));
+  // const uid = user?.uid;
+  // console.log("uid", uid);
   const [isLogin, setIsLogin] = useRecoilState(loginState);
   console.log("isLogin", isLogin);
   return (
@@ -22,9 +24,7 @@ export default function Nav(): JSX.Element {
         </button>
       </div>
       <div className="flex-none gap-2">
-        <div className="form-control">
-          <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto text-black" />
-        </div>
+        <Search />
         {isLogin === false ? (
           <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={moveSignin}>
             로그인
@@ -35,6 +35,8 @@ export default function Nav(): JSX.Element {
               className="btn bg-third text-fourth hover:bg-third2 border-none"
               onClick={() => {
                 setIsLogin(false);
+                auth.signOut();
+                resetUserInfo();
                 navigate("/");
               }}
             >
