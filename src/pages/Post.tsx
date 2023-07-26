@@ -5,33 +5,29 @@ import { articleState } from "../store/atom";
 import ReactQuill from "react-quill";
 import { auth, db } from "../firebase-config";
 import { addDoc, collection } from "firebase/firestore";
+import { useNavigate } from "react-router";
 
 export default function Post() {
   const modules = {
     toolbar: [[{ header: [1, 2, false] }], ["bold", "italic", "underline", "strike", "blockquote"], ["clean"]],
   };
   const formats = ["header", "bold", "italic", "underline", "strike", "blockquote"];
+  const navigate = useNavigate();
   const [article, setArticle] = useRecoilState(articleState);
-  console.log("article", article);
-  console.dir("setArticle", setArticle);
   const user = auth.currentUser;
-  console.log("user", user);
   const uid = user?.uid;
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "title") {
-      console.log(e.target.value);
       setArticle({ ...article, title: e.target.value });
     } else if (type === "category") {
-      console.log(e.target.value);
       setArticle({ ...article, category: e.target.value });
     } else if (type === "price") {
-      console.log(e.target.value);
       setArticle({ ...article, price: +e.target.value });
     }
   };
   const onChangeQuill = (content: string) => {
-    console.log(content);
     setArticle({ ...article, content: content });
   };
 
@@ -57,7 +53,7 @@ export default function Post() {
     return () => {
       console.log("removing beforeunload listener");
       window.removeEventListener("beforeunload", listener);
-      setArticle({ id: "", title: "", category: "", price: 0, content: "", image: null, comments: [] });
+      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, comments: [] });
     };
   }, []);
 
@@ -76,6 +72,9 @@ export default function Post() {
       // firestore(db)에 데이터 저장
       await addDoc(collection(db, "articles"), {
         ...articleData,
+      }).then(() => {
+        alert("게시글이 등록되었습니다.");
+        navigate("/");
       });
       // 게시글 작성 완료 후 페이지 이동
     } catch (e) {
@@ -96,9 +95,6 @@ export default function Post() {
             <div className="form-control" onChange={handleOnChange}>
               <label className="label" htmlFor="category">
                 <select id="category" name="category" className="w-full text-first select select-bordered max-w-xs">
-                  <option value="1" selected>
-                    카테고리를 선택해주세요.
-                  </option>
                   <option value="2">신발</option>
                   <option value="3">모자</option>
                   <option value="4">악세사리</option>
@@ -135,12 +131,6 @@ export default function Post() {
               <button className="btn bg-third text-fourth hover:bg-third2 border-none w-full" type="submit">
                 등록
               </button>
-              {/* <button
-                className="btn bg-third text-fourth hover:bg-third2 border-none w-1/2"
-                onClick={() => setArticle({ title: "", category: "", price: 0, content: "", image: null })}
-              >
-                취소
-              </button> */}
             </div>
           </form>
         </div>
