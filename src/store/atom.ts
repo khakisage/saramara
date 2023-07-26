@@ -9,6 +9,28 @@ export const loginState = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
+export const userState = atom({
+  key: "userState",
+  default: {
+    uid: "",
+    email: "",
+    displayName: "내일의 패션리더",
+    profileImg: "",
+  },
+  // effects_UNSTABLE: [persistAtom],
+});
+
+export const loginUserState = atom({
+  key: "loginUserState",
+  default: {
+    uid: "",
+    email: "",
+    displayName: "",
+    profileImg: "",
+  },
+  effects_UNSTABLE: [persistAtom],
+});
+
 export const emailState = atom({
   key: "emailState",
   default: "",
@@ -31,6 +53,7 @@ export const textState = atom({
 
 export type ArticleState = {
   id: string;
+  uid: string;
   title: string;
   content: string;
   category: string;
@@ -43,9 +66,10 @@ export const articleState = atom<ArticleState>({
   key: "articleState",
   default: {
     id: "",
+    uid: "",
     title: "",
     content: "",
-    category: "",
+    category: "2",
     price: 0,
     image: null,
     comments: [],
