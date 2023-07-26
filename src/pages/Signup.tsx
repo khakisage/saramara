@@ -1,9 +1,10 @@
 import React from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRecoilState } from "recoil";
-import { confirmPasswordState, emailState, passwordState } from "../store/atom";
-import { auth } from "../firebase-config";
+import { confirmPasswordState, emailState, passwordState, userState } from "../store/atom";
+import { auth, db } from "../firebase-config";
 import { MovePage } from "../components/common/utils";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export default function Signup(): JSX.Element {
   const [email, setEmail] = useRecoilState(emailState);
@@ -11,7 +12,7 @@ export default function Signup(): JSX.Element {
   const [confirmPassword, setConfirmPassword] = useRecoilState(confirmPasswordState);
   const moveSignin = MovePage({ url: "/signin" });
   const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-
+  const [userinfo, setUserinfo] = useRecoilState(userState);
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "email") {
@@ -27,7 +28,12 @@ export default function Signup(): JSX.Element {
     e.preventDefault();
     if (email !== "" && password !== "" && confirmPassword !== "" && password === confirmPassword) {
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        await createUserWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
+          setUserinfo({ ...userinfo, uid: userCredential.user?.uid, email: userCredential.user?.email as string });
+          await setDoc(doc(db, "users", userCredential.user?.uid), {
+            ...userinfo,
+          });
+        });
         console.log("회원가입에 성공하였습니다.");
         setEmail("");
         setPassword("");
