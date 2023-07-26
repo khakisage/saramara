@@ -1,16 +1,19 @@
 import { useParams } from "react-router";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { articleListState, articleSpecState } from "../store/atom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { articleListState, articleSpecState, userState } from "../store/atom";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
 import { fetchArticles } from "../components/common/utils";
 import Loading from "../components/common/Loading";
+import { auth, db } from "../firebase-config";
+import { deleteDoc, doc } from "firebase/firestore";
 
 export default function Article(): JSX.Element {
   const { articleId } = useParams<{ articleId: string }>();
   const setArticleList = useSetRecoilState(articleListState);
   const [articleSpec, setArticleSpec] = useRecoilState(articleSpecState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const userInfo = useRecoilValue(userState);
 
   useEffect(() => {
     setIsLoading(true);
@@ -18,13 +21,23 @@ export default function Article(): JSX.Element {
       setArticleList(fetchedArticles);
       // articleSpecState에 articleList의 length가 0일 때를 대비하여 articleSpecState의 type에 undefined도 추가
       const matchedArticle = fetchedArticles.find((article) => article.id === articleId);
-      console.log("matchedArticle", matchedArticle);
       setArticleSpec(matchedArticle || undefined);
-
       setIsLoading(false);
     });
   }, [articleId, setArticleList, setArticleSpec]);
 
+  const handleDelete = async () => {
+    if (userInfo.uid === "") {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    if (articleSpec?.uid === userInfo.uid) {
+      await deleteDoc(doc(db, "articles", articleId as string)).then(() => {
+        alert("삭제되었습니다.");
+        window.location.href = "/";
+      });
+    }
+  };
   return (
     <>
       <Loading isLoading={isLoading} />
@@ -37,9 +50,21 @@ export default function Article(): JSX.Element {
             <p className="mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
             <div className="flex justify-center">
               <button className="inline-flex text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg">Button</button>
-              <button className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">
-                Button
-              </button>
+              {articleSpec?.uid === userInfo.uid ? (
+                <button
+                  className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              ) : (
+                <button
+                  className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
+                  onClick={() => alert("권한이 없습니다.")}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         </div>
