@@ -23,9 +23,9 @@ type Article = {
 
 export const fetchArticles = async () => {
   const querySnapshot = await getDocs(collection(db, "articles"));
-  const articles: Article[] = [];
+  const articles: any = [];
   querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...(doc.data() as Article) });
+    articles.push({ id: doc.id, ...doc.data() });
   });
   return articles;
 };

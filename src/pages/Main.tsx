@@ -5,15 +5,15 @@ import { db } from "../firebase-config";
 import { useSetRecoilState } from "recoil";
 import { articleListState } from "../store/atom";
 
-type Article = {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  price: number;
-  image: string | ArrayBuffer | null;
-  comments: any[];
-};
+// type Article = {
+//   id: string;
+//   title: string;
+//   content: string;
+//   category: string;
+//   price: number;
+//   image: string | ArrayBuffer | null;
+//   comments: any[];
+// };
 export default function Main() {
   const setArticleList = useSetRecoilState(articleListState);
   const navigate = useNavigate();

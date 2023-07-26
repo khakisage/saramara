@@ -1,5 +1,5 @@
 import { MovePage } from "./utils";
-import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import { loginState, userState } from "../../store/atom";
 import { useNavigate } from "react-router";
 import { auth } from "../../firebase-config";
