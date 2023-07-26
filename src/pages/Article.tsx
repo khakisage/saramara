@@ -5,16 +5,32 @@ import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
 import { fetchArticles } from "../components/common/utils";
 import Loading from "../components/common/Loading";
-import { db } from "../firebase-config";
-import { deleteDoc, doc } from "firebase/firestore";
+import { auth, db } from "../firebase-config";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 
+interface CommentData {
+  uid: string;
+  displayName: string;
+  contents: string;
+  createdAt: number;
+  articleId?: string;
+}
 export default function Article(): JSX.Element {
   const { articleId } = useParams<{ articleId: string }>();
   const setArticleList = useSetRecoilState(articleListState);
   const [articleSpec, setArticleSpec] = useRecoilState(articleSpecState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const userInfo = useRecoilValue(userState);
+  const user = auth.currentUser;
+  const uid = user?.uid;
+  // commentList의 type은 CommentData[]로 지정해주기
 
+  const [commentList, setCommentList] = useState<CommentData[]>([]);
+  const [comment, setComment] = useState("");
+  console.log("아티클스펙", articleSpec);
+  console.log(userInfo);
+  const loginUserInfo = JSON.parse(localStorage.getItem("loginUserInfo") as string);
+  console.log("article login user info", loginUserInfo);
   useEffect(() => {
     setIsLoading(true);
     fetchArticles().then((fetchedArticles) => {
@@ -25,6 +41,97 @@ export default function Article(): JSX.Element {
       setIsLoading(false);
     });
   }, [articleId, setArticleList, setArticleSpec]);
+
+  const commentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setComment(e.target.value);
+  };
+
+  const typeButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const event = e.target as HTMLButtonElement;
+    const updatedArticleSpec = {
+      ...articleSpec,
+      good: 0,
+      bad: 0,
+    };
+    if (event.value === "1") {
+      console.log("좋아요");
+      await setDoc(doc(db, "articles", articleId), {
+        ...articleSpec,
+        good: updatedArticleSpec.good + 1,
+      });
+    } else if (event.value === "2") {
+      console.log("싫어요");
+      await setDoc(doc(db, "articles", articleId), {
+        ...articleSpec,
+        bad: updatedArticleSpec.bad + 1,
+      });
+    }
+  };
+  const handleSaramara = async (e: MouseEvent) => {
+    // e.preventDefault();
+    if (!uid) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    if (articleSpec?.uid === loginUserInfo.uid) {
+      alert("자신의 게시물에는 좋아요를 누를 수 없습니다.");
+      return;
+    }
+    // 사용자가 누른 버튼의 value가 1이라면, firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, good를 1 증가시킨다.
+    else {
+      typeButtonClick(e);
+    }
+  };
+
+  const handleComment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!uid) {
+      console.log("여기");
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    if (comment === "") {
+      alert("댓글을 입력해주세요.");
+      return;
+    }
+    try {
+      const commentData: CommentData = {
+        uid: loginUserInfo.uid,
+        displayName: loginUserInfo.displayName,
+        contents: comment,
+        createdAt: Date.now(),
+        articleId: articleSpec?.id,
+      };
+      await addDoc(collection(db, "comments"), commentData);
+      console.log(commentData);
+      setComment("");
+      setCommentList([...commentList, commentData]);
+    } catch (error) {
+      console.log(error);
+      alert("댓글 등록에 실패하였습니다.");
+    }
+  };
+  useEffect(() => {
+    const loadComments = async () => {
+      const querySnapshot = await getDocs(collection(db, "comments"));
+      const comments: any = [];
+      // querySnapshot으로 불러온 댓글 중에서, 현재 게시글의 id와 일치하는 댓글만 comments에 넣어주기
+      querySnapshot.forEach((doc) => {
+        if (doc.data().articleId === articleSpec?.id) {
+          // comments.push({ id: doc.id, ...doc.data() });
+          comments.push({ id: doc.id, ...doc.data() });
+        }
+        setCommentList(comments);
+        console.log("쿼리스냅샷", doc.data());
+      });
+
+      console.log(comments);
+    };
+    loadComments();
+  }, [articleSpec?.id]);
+  console.log(commentList);
 
   const handleDelete = async () => {
     if (userInfo.uid === "") {
@@ -38,33 +145,108 @@ export default function Article(): JSX.Element {
       });
     }
   };
+
+  const handleCommentDelete = async (id: string) => {
+    if (userInfo.uid !== uid) {
+      alert("권한이 없습니다!");
+      return;
+    }
+    try {
+      const commentRef = doc(db, "comments", id);
+      const commentSnapshot = await getDoc(commentRef);
+      console.log(commentSnapshot.data());
+      if (commentSnapshot.exists()) {
+        const commentData = commentSnapshot.data() as CommentData;
+        if (commentData.uid === userInfo.uid) {
+          await deleteDoc(commentRef);
+          alert("댓글이 삭제되었습니다.");
+          setCommentList(commentList.filter((comment) => comment.uid !== commentData.uid));
+        } else {
+          alert("댓글을 삭제할 권한이 없습니다.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Loading isLoading={isLoading} />
-      <section className="text-gray-600 body-font">
+      <section className="bg-second text-gray-600 body-font">
         <div className="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
           <img className="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero" src={articleSpec?.image} />
           <div className="text-center lg:w-2/3 w-full">
             <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">{articleSpec?.title}</h1>
             <h2 className="mb-8 leading-relaxed">{articleSpec?.price.toLocaleString()} 원</h2>
             <p className="mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
+            <p className="mb-8 leading-relaxed">{/* 사라 버튼 클릭 수, 마라 버튼 클릭 수 */}</p>
+            <div className="felx justify-center flex-row gap-8 mb-5">
+              <button
+                value={1}
+                className="text-white bg-red-500 border-0 mr-3 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg"
+                onClick={handleSaramara}
+              >
+                사라
+              </button>
+              <span className="text-fourth mr-3">{articleSpec?.good}</span>
+              <button
+                value={2}
+                className="text-white bg-red-500 border-0 mr-3 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg"
+                onClick={handleSaramara}
+              >
+                마라
+              </button>
+              <span className="text-fourth mr-3">{articleSpec?.bad}</span>
+            </div>
             <div className="flex justify-center">
-              <button className="inline-flex text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg">Button</button>
               {articleSpec?.uid === userInfo.uid ? (
                 <button
                   className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
                   onClick={handleDelete}
                 >
-                  Delete
+                  삭제하기
                 </button>
               ) : (
                 <button
                   className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
                   onClick={() => alert("권한이 없습니다.")}
                 >
-                  Delete
+                  삭제하기
                 </button>
               )}
+            </div>
+            <div className="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
+              <div className="card w-96 bg-first shadow-xl">
+                <form className="card-body" onSubmit={handleComment}>
+                  <label htmlFor="comment" className="text-fourth">
+                    여러분의 생각은?
+                  </label>
+                  {commentList &&
+                    commentList.map((comment: any) => {
+                      return (
+                        <>
+                          <div key={comment.uid} className="text-fourth">
+                            {comment.contents}
+                          </div>
+                        </>
+                      );
+                    })}
+                  <div className="flex flex-row gap-4">
+                    <input
+                      id="comment"
+                      type="text"
+                      placeholder="Type here"
+                      className="input input-bordered w-full max-w-xs"
+                      value={comment}
+                      onChange={commentOnChange}
+                    />
+                    <button type="submit" className="btn btn-primary bg-third">
+                      등록
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
