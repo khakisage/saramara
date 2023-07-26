@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
 import { fetchArticles } from "../components/common/utils";
 import Loading from "../components/common/Loading";
-import { auth, db } from "../firebase-config";
+import { db } from "../firebase-config";
 import { deleteDoc, doc } from "firebase/firestore";
 
 export default function Article(): JSX.Element {

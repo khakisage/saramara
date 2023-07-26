@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { confirmPasswordState, emailState, passwordState, userState } from "../store/atom";
 import { auth, db } from "../firebase-config";
 import { MovePage } from "../components/common/utils";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Signup(): JSX.Element {
   const [email, setEmail] = useRecoilState(emailState);
