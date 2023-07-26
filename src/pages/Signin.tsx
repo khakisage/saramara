@@ -1,16 +1,19 @@
 import React from "react";
 import { MovePage } from "../components/common/utils";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { emailState, loginState, passwordState } from "../store/atom";
+import { emailState, loginState, loginUserState, passwordState } from "../store/atom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase-config";
+import { auth, db } from "../firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
   const [email, setEmail] = useRecoilState(emailState);
   const [password, setPassword] = useRecoilState(passwordState);
+  const setLoginUserInfo = useSetRecoilState(loginUserState);
   const setIsLogin = useSetRecoilState(loginState);
   const moveMain = MovePage({ url: "/" });
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "email") {
@@ -25,10 +28,31 @@ export default function Signin(): JSX.Element {
     setPassword("");
   };
 
+  const getUserInfo = async (uid: string) => {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      setLoginUserInfo({
+        displayName: docSnap.data()?.displayName,
+        profileImg: docSnap.data()?.profileImg,
+        uid: docSnap.data()?.uid,
+        email: docSnap.data()?.email,
+      });
+      localStorage.setItem("loginUserInfo", JSON.stringify(docSnap.data()));
+    } else {
+      console.log("No such document!");
+    }
+  };
+
   const handleOnSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+        console.log("로그인 성공 시 가져오는 데이터", userCredential);
+        // setUserInfo({ ...userInfo, uid: userCredential.user?.uid, email: userCredential.user?.email as string });
+        getUserInfo(userCredential.user?.uid as string);
+      });
       console.log("로그인에 성공하였습니다.");
       setIsLogin(true);
       resetInput();
