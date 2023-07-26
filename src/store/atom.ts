@@ -16,6 +16,7 @@ export const userState = atom({
     email: "",
     displayName: "내일의 패션리더",
     profileImg: "",
+    favoriteHistory: [],
   },
   // effects_UNSTABLE: [persistAtom],
 });
@@ -59,6 +60,8 @@ export type ArticleState = {
   category: string;
   price: number;
   image: string | ArrayBuffer | null;
+  good: number;
+  bad: number;
   comments: any[];
 };
 
@@ -71,6 +74,8 @@ export const articleState = atom<ArticleState>({
     content: "",
     category: "2",
     price: 0,
+    good: 0,
+    bad: 0,
     image: null,
     comments: [],
   },
@@ -94,4 +99,14 @@ export const pageState = atom({
 export const articleSpecState = atom<ArticleState | undefined>({
   key: "articleSpecState",
   default: undefined,
+});
+
+export const commentState = atom({
+  key: "commentState",
+  default: {
+    articleId: "",
+    uid: "",
+    content: "",
+    displayName: "",
+  },
 });

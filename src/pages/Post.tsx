@@ -53,7 +53,7 @@ export default function Post() {
     return () => {
       console.log("removing beforeunload listener");
       window.removeEventListener("beforeunload", listener);
-      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, comments: [] });
+      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, comments: [], good: 0, bad: 0 });
     };
   }, []);
 
@@ -64,6 +64,8 @@ export default function Post() {
     price: article.price,
     content: article.content,
     image: article.image,
+    good: 0,
+    bad: 0,
   };
   // firestore(db)에 데이터 저장
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

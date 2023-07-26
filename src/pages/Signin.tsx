@@ -38,6 +38,7 @@ export default function Signin(): JSX.Element {
         profileImg: docSnap.data()?.profileImg,
         uid: docSnap.data()?.uid,
         email: docSnap.data()?.email,
+        favoriteHistory: docSnap.data()?.favoriteHistory,
       });
       localStorage.setItem("loginUserInfo", JSON.stringify(docSnap.data()));
     } else {

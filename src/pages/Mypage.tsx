@@ -59,17 +59,38 @@ export default function Mypage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+  // const updateUserInfo = async (uid: string) => {
+  //   await updateDoc(doc(db, "users", uid), {
+  //     displayName: userInfo.displayName,
+  //     profileImg: userInfo.profileImg,
+  //     uid: userInfo.uid,
+  //     email: userInfo.email,
+  //   }).then(() => {
+  //     alert("수정되었습니다.");
+  //   });
+  // };
   const updateUserInfo = async (uid: string) => {
-    await updateDoc(doc(db, "users", uid), {
+    const updatedUserInfo = {
       displayName: userInfo.displayName,
-      profileImg: userInfo.profileImg,
       uid: userInfo.uid,
       email: userInfo.email,
-    }).then(() => {
-      alert("수정되었습니다.");
-    });
-  };
+      profileImg: userInfo.profileImg,
+      favoriteHistory: [],
+    };
 
+    // if (typeof userInfo.profileImg === "string") {
+    //   updatedUserInfo.profileImg = userInfo.profileImg;
+    // } else {
+    //   updatedUserInfo.profileImg = await encodeFileToBase64(userInfo.profileImg as File);
+    // }
+
+    await updateDoc(doc(db, "users", uid), updatedUserInfo)
+      .then(() => {
+        alert("수정되었습니다.");
+        localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
+      })
+      .catch((err) => console.log(err.message));
+  };
   return (
     <>
       <Loading isLoading={isLoading} />
