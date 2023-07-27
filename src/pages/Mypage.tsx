@@ -59,16 +59,7 @@ export default function Mypage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
-  // const updateUserInfo = async (uid: string) => {
-  //   await updateDoc(doc(db, "users", uid), {
-  //     displayName: userInfo.displayName,
-  //     profileImg: userInfo.profileImg,
-  //     uid: userInfo.uid,
-  //     email: userInfo.email,
-  //   }).then(() => {
-  //     alert("수정되었습니다.");
-  //   });
-  // };
+
   const updateUserInfo = async (uid: string) => {
     const updatedUserInfo = {
       displayName: userInfo.displayName,
@@ -78,16 +69,11 @@ export default function Mypage() {
       favoriteHistory: [],
     };
 
-    // if (typeof userInfo.profileImg === "string") {
-    //   updatedUserInfo.profileImg = userInfo.profileImg;
-    // } else {
-    //   updatedUserInfo.profileImg = await encodeFileToBase64(userInfo.profileImg as File);
-    // }
-
     await updateDoc(doc(db, "users", uid), updatedUserInfo)
       .then(() => {
         alert("수정되었습니다.");
         localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
+        setUserInfo(updatedUserInfo);
       })
       .catch((err) => console.log(err.message));
   };
@@ -119,7 +105,7 @@ export default function Mypage() {
                 </div>
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">닉네임 : {userInfo.displayName}</span>
+                    <span className="label-text">닉네임 : {loginUserInfo.displayName}</span>
                   </label>
                 </div>
                 <div className="flex flex-row gap-2">
