@@ -16,7 +16,7 @@ export const userState = atom({
     email: "",
     displayName: "내일의 패션리더",
     profileImg: "",
-    favoriteHistory: [],
+    favoriteHistory: {},
   },
   // effects_UNSTABLE: [persistAtom],
 });
@@ -62,7 +62,7 @@ export type ArticleState = {
   image: string | ArrayBuffer | null;
   good: number;
   bad: number;
-  comments: any[];
+  // comments: any[];
 };
 
 export const articleState = atom<ArticleState>({
@@ -77,7 +77,7 @@ export const articleState = atom<ArticleState>({
     good: 0,
     bad: 0,
     image: null,
-    comments: [],
+    // comments: [],
   },
 });
 
