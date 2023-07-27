@@ -1,16 +1,17 @@
 import React from "react";
 import { MovePage } from "../components/common/utils";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { emailState, loginState, loginUserState, passwordState } from "../store/atom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { emailState, loginState, loginUserState, passwordState, userState } from "../store/atom";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, db } from "../firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
   const [email, setEmail] = useRecoilState(emailState);
   const [password, setPassword] = useRecoilState(passwordState);
   const setLoginUserInfo = useSetRecoilState(loginUserState);
+  const [userinfo, setUserinfo] = useRecoilState(userState);
   const setIsLogin = useSetRecoilState(loginState);
   const moveMain = MovePage({ url: "/" });
 
@@ -26,6 +27,49 @@ export default function Signin(): JSX.Element {
   const resetInput = () => {
     setEmail("");
     setPassword("");
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+
+      if (userCredential.user) {
+        const { uid, email } = userCredential.user;
+
+        setUserinfo({ ...userinfo, uid, email: email as string });
+
+        // 구글 계정에서 제공되는 사용자 정보를 반영
+        setLoginUserInfo({
+          displayName: userCredential.user.displayName,
+          profileImg: userCredential.user.photoURL,
+          uid: userCredential.user.uid,
+          email: email as string,
+        });
+
+        localStorage.setItem(
+          "loginUserInfo",
+          JSON.stringify({
+            displayName: userCredential.user.displayName,
+            profileImg: userCredential.user.photoURL,
+            uid: userCredential.user.uid,
+            email: email as string,
+          })
+        );
+
+        await setDoc(doc(db, "users", uid), {
+          ...userinfo,
+        });
+      }
+
+      console.log("구글 로그인 완료!");
+      setIsLogin(true);
+      resetInput();
+      moveMain();
+    } catch (error) {
+      console.log(error);
+      alert("구글 로그인에 실패하였습니다.");
+    }
   };
 
   const getUserInfo = async (uid: string) => {
@@ -84,7 +128,6 @@ export default function Signin(): JSX.Element {
                 name="email"
                 autoComplete="username"
                 value={email}
-                required
                 onChange={handleOnChange}
               />
             </div>
@@ -98,7 +141,6 @@ export default function Signin(): JSX.Element {
                 className="input input-bordered text-black"
                 name="password"
                 autoComplete="new-password"
-                required
                 value={password}
                 onChange={handleOnChange}
               />
@@ -106,15 +148,16 @@ export default function Signin(): JSX.Element {
             <div className="form-control mt-6">
               <button className="btn bg-first text-fourth">로그인</button>
             </div>
-            <div className="form-control mt-4">
-              <button className="btn bg-fourth text-black">구글 로그인</button>
-            </div>
+
             <div className="form-control mt-4">
               <button className="btn bg-first text-fourth" onClick={moveSignup}>
                 회원가입하러 가기
               </button>
             </div>
           </form>
+          <button className="btn bg-fourth text-black" onClick={handleGoogleLogin}>
+            구글 로그인
+          </button>
         </div>
       </div>
     </div>
