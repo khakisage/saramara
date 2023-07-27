@@ -1,19 +1,20 @@
 import { MovePage } from "./utils";
-import { useRecoilState, useResetRecoilState } from "recoil";
-import { loginState, userState } from "../../store/atom";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { loginState, loginUserState, userState } from "../../store/atom";
 import { useNavigate } from "react-router";
 import { auth } from "../../firebase-config";
 import Search from "./Search";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Nav(): JSX.Element {
   const moveMain = MovePage({ url: "/" });
   const moveSignin = MovePage({ url: "/signin" });
   const navigate = useNavigate();
   const resetUserInfo = useResetRecoilState(userState);
-  const loginUserInfo = JSON.parse(localStorage.getItem("loginUserInfo") as string);
   const deleteUserInfo = () => localStorage.removeItem("loginUserInfo");
   const [isLogin, setIsLogin] = useRecoilState(loginState);
+  const loginUserInfo = useRecoilValue(loginUserState);
 
   return (
     <div className="navbar bg-first fixed">
@@ -32,7 +33,7 @@ export default function Nav(): JSX.Element {
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-fullhover:text-bg-fourth">
-                {loginUserInfo ? <img src={loginUserInfo.profileImg} /> : <img src="/Default_profile.png" />}
+                {loginUserInfo ? <img src={loginUserInfo?.profileImg} /> : <img src="/Default_profile.png" />}
               </div>
             </label>
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-first2 rounded-box w-52 ">
