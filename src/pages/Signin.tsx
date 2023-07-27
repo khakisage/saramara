@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { MovePage } from "../components/common/utils";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { emailState, loginState, loginUserState, passwordState, userState } from "../store/atom";
@@ -8,10 +8,12 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
-  const [email, setEmail] = useRecoilState(emailState);
-  const [password, setPassword] = useRecoilState(passwordState);
+  // const [email, setEmail] = useRecoilState(emailState);
+  // const [password, setPassword] = useRecoilState(passwordState);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const setLoginUserInfo = useSetRecoilState(loginUserState);
-  const [userinfo, setUserinfo] = useRecoilState(userState);
+  const [userinfo, setUserinfo] = useRecoilState(userState); // 아직까진 사용하지 않음
   const setIsLogin = useSetRecoilState(loginState);
   const moveMain = MovePage({ url: "/" });
 
@@ -21,6 +23,26 @@ export default function Signin(): JSX.Element {
       setEmail(e.target.value);
     } else if (type === "password") {
       setPassword(e.target.value);
+    }
+  };
+
+  const submitSignin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email === "" || password === "") return;
+    try {
+      await signInWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
+        const userDoc = await getDoc(doc(db, "users", userCredential.user.uid)); // 유저 collection에서 해당 유저 문서 가져오기.
+        if (userDoc.exists()) {
+          const { uid } = userCredential.user;
+          // localStorage.setItem("loginUserInfo", JSON.stringify({ uid, email })); // 로컬 스토리지에 로그인 유저 정보 저장
+          getUserInfo(uid);
+        }
+        setIsLogin(true);
+        alert("로그인 되었습니다.");
+        moveMain();
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -77,37 +99,38 @@ export default function Signin(): JSX.Element {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       console.log("Document data:", docSnap.data());
-      setLoginUserInfo({
-        displayName: docSnap.data()?.displayName,
-        profileImg: docSnap.data()?.profileImg,
-        uid: docSnap.data()?.uid,
-        email: docSnap.data()?.email,
-        favoriteHistory: docSnap.data()?.favoriteHistory,
-      });
-      localStorage.setItem("loginUserInfo", JSON.stringify(docSnap.data()));
+      // setLoginUserInfo({
+      //   displayName: docSnap.data()?.displayName,
+      //   profileImg: docSnap.data()?.profileImg,
+      //   uid: docSnap.data()?.uid,
+      //   email: docSnap.data()?.email,
+      //   favoriteHistory: docSnap.data()?.favoriteHistory,
+      // });
+      setLoginUserInfo({ ...docSnap.data() });
+      localStorage.setItem("loginUserInfo", JSON.stringify({ ...docSnap.data() }));
     } else {
       console.log("No such document!");
     }
   };
 
-  const handleOnSignin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
-        console.log("로그인 성공 시 가져오는 데이터", userCredential);
-        // setUserInfo({ ...userInfo, uid: userCredential.user?.uid, email: userCredential.user?.email as string });
-        getUserInfo(userCredential.user?.uid as string);
-      });
-      console.log("로그인에 성공하였습니다.");
-      setIsLogin(true);
-      resetInput();
-      moveMain();
-    } catch (error) {
-      console.dir(error);
-      resetInput();
-      alert("로그인에 실패하였습니다.");
-    }
-  };
+  // const handleOnSignin = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     await signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+  //       console.log("로그인 성공 시 가져오는 데이터", userCredential);
+  //       // setUserInfo({ ...userInfo, uid: userCredential.user?.uid, email: userCredential.user?.email as string });
+  //       getUserInfo(userCredential.user?.uid as string);
+  //     });
+  //     console.log("로그인에 성공하였습니다.");
+  //     setIsLogin(true);
+  //     resetInput();
+  //     moveMain();
+  //   } catch (error) {
+  //     console.dir(error);
+  //     resetInput();
+  //     alert("로그인에 실패하였습니다.");
+  //   }
+  // };
 
   return (
     <div className="hero min-h-screen bg-second">
@@ -116,7 +139,7 @@ export default function Signin(): JSX.Element {
           <h1 className="text-5xl font-bold text-fourth">로그인</h1>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-          <form className="card-body" onSubmit={handleOnSignin}>
+          <form className="card-body" onSubmit={submitSignin}>
             <div className="form-control">
               <label className="label">
                 <span className="label-text ">Email</span>
