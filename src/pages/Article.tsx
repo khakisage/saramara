@@ -16,7 +16,7 @@ interface CommentData {
   articleId?: string;
 }
 export default function Article(): JSX.Element {
-  const { articleId } = useParams<{ articleId: string }>();
+  const { articleId } = useParams<{ articleId: string }>(); // articles collection의 문서 id
   const setArticleList = useSetRecoilState(articleListState);
   const [articleSpec, setArticleSpec] = useRecoilState(articleSpecState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -31,12 +31,13 @@ export default function Article(): JSX.Element {
   console.log(userInfo);
   const loginUserInfo = JSON.parse(localStorage.getItem("loginUserInfo") as string);
   console.log("article login user info", loginUserInfo);
+
   useEffect(() => {
     setIsLoading(true);
     fetchArticles().then((fetchedArticles) => {
       setArticleList(fetchedArticles);
       // articleSpecState에 articleList의 length가 0일 때를 대비하여 articleSpecState의 type에 undefined도 추가
-      const matchedArticle = fetchedArticles.find((article) => article.id === articleId);
+      const matchedArticle = fetchedArticles.find((article: { id: string | undefined }) => article.id === articleId);
       setArticleSpec(matchedArticle || undefined);
       setIsLoading(false);
     });
@@ -52,22 +53,49 @@ export default function Article(): JSX.Element {
     const event = e.target as HTMLButtonElement;
     const updatedArticleSpec = {
       ...articleSpec,
-      good: 0,
-      bad: 0,
     };
     if (event.value === "1") {
+      // 좋아요 버튼을 눌렀을 때,
+      // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 없다면,
+      // 현재 게시물의 id를 loginUserInfo의 favoriteHistory에
+      // {id: articleSpec?.id, good: articleSpec?.good} 형태로 추가해준다.
+      // firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, good를 1 증가시킨다.
+      // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 있다면,
+      // alert를 띄워준다.
+      if (!Object.keys(loginUserInfo.favoriteHistory).includes(articleSpec?.id as string)) {
+        // loginUserInfo.favoriteHistory는 객체
+        loginUserInfo.favoriteHistory[articleSpec!.id] = articleSpec?.good;
+        updatedArticleSpec.good! += 1;
+        await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
+        localStorage.setItem("loginUserInfo", JSON.stringify(loginUserInfo));
+      } else {
+        alert("이미 선택하였습니다.");
+      }
       console.log("좋아요");
-      await setDoc(doc(db, "articles", articleId), {
-        ...articleSpec,
-        good: updatedArticleSpec.good + 1,
-      });
+      //updatedArticleSpec.good = articleSpec?.good ? articleSpec.good + 1 : 1;
     } else if (event.value === "2") {
-      console.log("싫어요");
-      await setDoc(doc(db, "articles", articleId), {
-        ...articleSpec,
-        bad: updatedArticleSpec.bad + 1,
-      });
+      // 싫어요 버튼을 눌렀을 때,
+      // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 없다면,
+      // 현재 게시물의 id를 loginUserInfo의 favoriteHistory에
+      // {id: articleSpec?.id, bad: articleSpec?.bad} 형태로 추가해준다.
+      // firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, bad를 1 증가시킨다.
+      // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 있다면,
+      // alert를 띄워준다.
+      if (!Object.keys(loginUserInfo.favoriteHistory).includes(articleSpec?.id as string)) {
+        loginUserInfo.favoriteHistory[articleSpec!.id] = articleSpec?.bad;
+        updatedArticleSpec.bad! += 1;
+        await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
+        await setDoc(doc(db, "users", uid), loginUserInfo);
+        localStorage.setItem("loginUserInfo", JSON.stringify(loginUserInfo));
+      } else {
+        alert("이미 선택하였습니다.");
+        console.log("싫어요");
+      }
+
+      // updatedArticleSpec.bad = articleSpec?.bad ? articleSpec.bad + 1 : 1;
     }
+
+    await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
   };
   const handleSaramara = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // e.preventDefault();
@@ -78,9 +106,7 @@ export default function Article(): JSX.Element {
     if (articleSpec?.uid === loginUserInfo.uid) {
       alert("자신의 게시물에는 좋아요를 누를 수 없습니다.");
       return;
-    }
-    // 사용자가 누른 버튼의 value가 1이라면, firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, good를 1 증가시킨다.
-    else {
+    } else {
       typeButtonClick(e);
     }
   };
@@ -117,10 +143,8 @@ export default function Article(): JSX.Element {
     const loadComments = async () => {
       const querySnapshot = await getDocs(collection(db, "comments"));
       const comments: any = [];
-      // querySnapshot으로 불러온 댓글 중에서, 현재 게시글의 id와 일치하는 댓글만 comments에 넣어주기
       querySnapshot.forEach((doc) => {
         if (doc.data().articleId === articleSpec?.id) {
-          // comments.push({ id: doc.id, ...doc.data() });
           comments.push({ id: doc.id, ...doc.data() });
         }
         setCommentList(comments);
@@ -173,7 +197,7 @@ export default function Article(): JSX.Element {
   return (
     <>
       <Loading isLoading={isLoading} />
-      <section className="bg-second text-fourth body-font">
+      <section className="bg-second text-fourth body-font h-full">
         <div className="flex items-center justify-center absolute top-1 right-1 mt-20 mb-5 mr-60">
           {articleSpec?.uid === userInfo.uid ? (
             <button
@@ -191,7 +215,7 @@ export default function Article(): JSX.Element {
             </button>
           )}
         </div>
-        <div className="container mx-auto h-screen flex px-5 py-24 flex-col items-center">
+        <div className="container mx-auto h-full flex px-5 py-24 flex-col items-center">
           <div className="flex flex-row justify-between content-between">
             <h1 className="text-4xl text-fourth mb-6 ">사? 말아?</h1>
           </div>
