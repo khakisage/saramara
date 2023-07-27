@@ -69,7 +69,7 @@ export default function Article(): JSX.Element {
       });
     }
   };
-  const handleSaramara = async (e: MouseEvent) => {
+  const handleSaramara = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // e.preventDefault();
     if (!uid) {
       alert("로그인이 필요합니다.");
@@ -173,11 +173,31 @@ export default function Article(): JSX.Element {
   return (
     <>
       <Loading isLoading={isLoading} />
-      <section className="bg-second text-gray-600 body-font">
-        <div className="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
+      <section className="bg-second text-fourth body-font">
+        <div className="flex items-center justify-center absolute top-1 right-1 mt-20 mb-5 mr-60">
+          {articleSpec?.uid === userInfo.uid ? (
+            <button
+              className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
+              onClick={handleDelete}
+            >
+              삭제하기
+            </button>
+          ) : (
+            <button
+              className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
+              onClick={() => alert("권한이 없습니다.")}
+            >
+              삭제하기
+            </button>
+          )}
+        </div>
+        <div className="container mx-auto h-screen flex px-5 py-24 flex-col items-center">
+          <div className="flex flex-row justify-between content-between">
+            <h1 className="text-4xl text-fourth mb-6 ">사? 말아?</h1>
+          </div>
           <img className="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero" src={articleSpec?.image} />
           <div className="text-center lg:w-2/3 w-full">
-            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">{articleSpec?.title}</h1>
+            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-fourth">{articleSpec?.title}</h1>
             <h2 className="mb-8 leading-relaxed">{articleSpec?.price.toLocaleString()} 원</h2>
             <p className="mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
             <p className="mb-8 leading-relaxed">{/* 사라 버튼 클릭 수, 마라 버튼 클릭 수 */}</p>
@@ -198,23 +218,6 @@ export default function Article(): JSX.Element {
                 마라
               </button>
               <span className="text-fourth mr-3">{articleSpec?.bad}</span>
-            </div>
-            <div className="flex justify-center">
-              {articleSpec?.uid === userInfo.uid ? (
-                <button
-                  className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-                  onClick={handleDelete}
-                >
-                  삭제하기
-                </button>
-              ) : (
-                <button
-                  className="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-                  onClick={() => alert("권한이 없습니다.")}
-                >
-                  삭제하기
-                </button>
-              )}
             </div>
             <div className="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
               <div className="card w-96 bg-first shadow-xl">
@@ -237,7 +240,7 @@ export default function Article(): JSX.Element {
                       id="comment"
                       type="text"
                       placeholder="Type here"
-                      className="input input-bordered w-full max-w-xs"
+                      className="input input-bordered w-full max-w-xs text-first"
                       value={comment}
                       onChange={commentOnChange}
                     />
