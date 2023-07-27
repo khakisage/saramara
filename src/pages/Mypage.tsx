@@ -1,5 +1,5 @@
-import { useRecoilState } from "recoil";
-import { articleListState, userState } from "../store/atom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { articleListState, loginUserState, userState } from "../store/atom";
 import { auth, db } from "../firebase-config";
 import { useEffect, useState } from "react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
@@ -19,6 +19,7 @@ export default function Mypage() {
   const [articles, setArticles] = useRecoilState(articleListState);
   const myArticleList = articles.filter((article) => article.uid === uid);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const setLoginUserInfo = useSetRecoilState(loginUserState);
 
   useEffect(() => {
     setIsLoading(true);
@@ -66,7 +67,7 @@ export default function Mypage() {
       uid: userInfo.uid,
       email: userInfo.email,
       profileImg: userInfo.profileImg,
-      favoriteHistory: [],
+      favoriteHistory: {},
     };
 
     await updateDoc(doc(db, "users", uid), updatedUserInfo)
@@ -74,6 +75,7 @@ export default function Mypage() {
         alert("수정되었습니다.");
         localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
         setUserInfo(updatedUserInfo);
+        setLoginUserInfo(updatedUserInfo);
       })
       .catch((err) => console.log(err.message));
   };
