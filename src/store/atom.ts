@@ -28,6 +28,7 @@ export const loginUserState = atom({
     email: "",
     displayName: "",
     profileImg: "",
+    favoriteHistory: {},
   },
   effects_UNSTABLE: [persistAtom],
 });
@@ -62,7 +63,6 @@ export type ArticleState = {
   image: string | ArrayBuffer | null;
   good: number;
   bad: number;
-  // comments: any[];
 };
 
 export const articleState = atom<ArticleState>({
@@ -89,6 +89,7 @@ export const fileState = atom({
 export const articleListState = atom<ArticleState[]>({
   key: "articleListState",
   default: [],
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const pageState = atom({

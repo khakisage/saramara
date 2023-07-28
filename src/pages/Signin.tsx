@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { MovePage } from "../components/common/utils";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { emailState, loginState, loginUserState, passwordState, userState } from "../store/atom";
+import { loginState, loginUserState, userState } from "../store/atom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, db } from "../firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
+interface curLoginUser {
+  displayName: string | null;
+  profileImg: string | null;
+  uid: string;
+  email: string;
+  favoriteHistory: object;
+}
+
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
-  // const [email, setEmail] = useRecoilState(emailState);
-  // const [password, setPassword] = useRecoilState(passwordState);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const setLoginUserInfo = useSetRecoilState(loginUserState);
@@ -17,6 +23,7 @@ export default function Signin(): JSX.Element {
   const setIsLogin = useSetRecoilState(loginState);
   const moveMain = MovePage({ url: "/" });
 
+  // 로그인 폼 상태 변경 함수 -------------------------
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "email") {
@@ -25,18 +32,22 @@ export default function Signin(): JSX.Element {
       setPassword(e.target.value);
     }
   };
+  // -------------------------------------------------
 
+  // 로그인 폼 제출 함수 -----------------------------
   const submitSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (email === "" || password === "") return;
     try {
       await signInWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
         const userDoc = await getDoc(doc(db, "users", userCredential.user.uid)); // 유저 collection에서 해당 유저 문서 가져오기.
-        if (userDoc.exists()) {
-          const { uid } = userCredential.user;
-          // localStorage.setItem("loginUserInfo", JSON.stringify({ uid, email })); // 로컬 스토리지에 로그인 유저 정보 저장
-          getUserInfo(uid);
-        }
+        // if (userDoc.exists()) {
+        //   const { uid } = userCredential.user;
+        //   // localStorage.setItem("loginUserInfo", JSON.stringify({ uid, email })); // 로컬 스토리지에 로그인 유저 정보 저장
+        //   getUserInfo(uid);
+        // }
+        console.log("signin page submitSignin 내부 userDoc의 데이터", userDoc.data());
+        setLoginUserInfo({ ...userDoc.data() });
         setIsLogin(true);
         alert("로그인 되었습니다.");
         moveMain();
@@ -45,6 +56,7 @@ export default function Signin(): JSX.Element {
       console.log(error);
     }
   };
+  // -------------------------------------------------
 
   const resetInput = () => {
     setEmail("");

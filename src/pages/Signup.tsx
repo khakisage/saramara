@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRecoilState } from "recoil";
-import { confirmPasswordState, emailState, passwordState, userState } from "../store/atom";
+import { userState } from "../store/atom";
 import { auth, db } from "../firebase-config";
 import { MovePage } from "../components/common/utils";
 import { doc, setDoc } from "firebase/firestore";
 
 export default function Signup(): JSX.Element {
+  // 회원가입 폼 상태 정보 -------------------------
   const [email, setEmail] = useState<string>(""); // 이메일
   const [password, setPassword] = useState<string>(""); // 비밀번호
   const [confirmPassword, setConfirmPassword] = useState<string>(""); // 비밀번호 확인
+  // ------------------------------------------
 
   const moveSignin = MovePage({ url: "/signin" }); // 로그인 페이지로 이동
   const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i; // 이메일 정규식
-  // handleOnChange 함수 : input 태그의 value를 state에 저장
+
+  // handleOnChange 함수 : input 태그의 value를 state에 저장 -------
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "email") {
@@ -24,6 +27,9 @@ export default function Signup(): JSX.Element {
       setConfirmPassword(e.target.value);
     }
   };
+  // -----------------------------------------------------------
+
+  // submitSignup 함수 : 회원가입 폼을 제출할 때 실행되는 함수 ------
   const submitSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // submit의 기본 동작을 막음
     if (email === "" || password === "" || confirmPassword === "" || password !== confirmPassword) return;
@@ -33,9 +39,7 @@ export default function Signup(): JSX.Element {
           uid: userCredential.user?.uid,
           email: userCredential.user?.email,
         });
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
+        resetInput();
         alert("회원가입이 완료되었습니다.");
         moveSignin();
       });
@@ -43,47 +47,7 @@ export default function Signup(): JSX.Element {
       console.log(error);
     }
   };
-
-  // const [email, setEmail] = useRecoilState(emailState);
-  // const [password, setPassword] = useRecoilState(passwordState);
-  // const [confirmPassword, setConfirmPassword] = useRecoilState(confirmPasswordState);
-
-  const [userinfo, setUserinfo] = useRecoilState(userState);
-  // const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const type = e.target.name;
-  //   if (type === "email") {
-  //     setEmail(e.target.value);
-  //   } else if (type === "password") {
-  //     setPassword(e.target.value);
-  //   } else if (type === "confirmPassword") {
-  //     setConfirmPassword(e.target.value);
-  //   }
-  // };
-
-  const handleOnSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (email !== "" && password !== "" && confirmPassword !== "" && password === confirmPassword) {
-      try {
-        await createUserWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
-          setUserinfo({ ...userinfo, uid: userCredential.user?.uid, email: userCredential.user?.email as string });
-          await setDoc(doc(db, "users", userCredential.user?.uid), {
-            ...userinfo,
-          });
-        });
-        console.log("회원가입에 성공하였습니다.");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        moveSignin();
-      } catch (error) {
-        console.dir(error);
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        alert("회원가입에 실패하였습니다.");
-      }
-    }
-  };
+  // -----------------------------------------------------------
 
   const resetInput = () => {
     setEmail("");

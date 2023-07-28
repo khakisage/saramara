@@ -221,11 +221,11 @@ export default function Article(): JSX.Element {
           </div>
           <img className="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero" src={articleSpec?.image} />
           <div className="text-center lg:w-2/3 w-full">
-            <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-fourth">{articleSpec?.title}</h1>
-            <h2 className="mb-8 leading-relaxed">{articleSpec?.price.toLocaleString()} 원</h2>
-            <p className="mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
-            <p className="mb-8 leading-relaxed">{/* 사라 버튼 클릭 수, 마라 버튼 클릭 수 */}</p>
-            <div className="felx justify-center flex-row gap-8 mb-5">
+            <h1 className="title-font sm:text-4xl text-3xl mb-2 font-medium text-fourth">{articleSpec?.title}</h1>
+            <h2 className="mb-4 leading-relaxed">{articleSpec?.price.toLocaleString()} 원</h2>
+            <p className="mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
+            <p className="mb-2 leading-relaxed">{/* 사라 버튼 클릭 수, 마라 버튼 클릭 수 */}</p>
+            <div className="felx justify-center flex-row gap-8">
               <button
                 value={1}
                 className="text-white bg-red-500 border-0 mr-3 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg"
@@ -243,7 +243,7 @@ export default function Article(): JSX.Element {
               </button>
               <span className="text-fourth mr-3">{articleSpec?.bad}</span>
             </div>
-            <div className="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
+            <div className="container mx-auto flex px-5 pt-2 items-center justify-center flex-col">
               <div className="card w-96 bg-first shadow-xl">
                 <form className="card-body" onSubmit={handleComment}>
                   <label htmlFor="comment" className="text-fourth">

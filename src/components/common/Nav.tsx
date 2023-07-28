@@ -5,14 +5,13 @@ import { useNavigate } from "react-router";
 import { auth } from "../../firebase-config";
 import Search from "./Search";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 export default function Nav(): JSX.Element {
   const moveMain = MovePage({ url: "/" });
   const moveSignin = MovePage({ url: "/signin" });
   const navigate = useNavigate();
   const resetUserInfo = useResetRecoilState(userState);
-  const deleteUserInfo = () => localStorage.removeItem("loginUserInfo");
+  const deleteUserInfo = () => localStorage.removeItem("recoil-persist");
   const [isLogin, setIsLogin] = useRecoilState(loginState);
   const loginUserInfo = useRecoilValue(loginUserState);
 
