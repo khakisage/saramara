@@ -1,8 +1,8 @@
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { articleListState, loginUserState } from "../store/atom";
-import { auth, db } from "../firebase-config";
-import { useEffect, useState } from "react";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { db } from "../firebase-config";
+import { useState } from "react";
+import { doc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router";
 import Loading from "../components/common/Loading";
 
@@ -12,9 +12,9 @@ export default function Mypage() {
     navigate(`/articles/${articleId}`);
   };
 
-  const [articles, setArticles] = useRecoilState(articleListState);
+  const articleList = useRecoilValue(articleListState);
   const [loginUserInfo, setLoginUserInfo] = useRecoilState(loginUserState);
-  const myArticleList = articles.filter((article) => article.uid === loginUserInfo.uid);
+  const myArticleList = articleList.filter((article) => article.uid === loginUserInfo.uid);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -32,7 +32,7 @@ export default function Mypage() {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "nickname") {
-      setLoginUserInfo((prev) => ({ ...prev, displayName: e.target.value }));
+      setLoginUserInfo((prev: typeof loginUserInfo) => ({ ...prev, displayName: e.target.value }));
     }
   };
 
@@ -55,6 +55,7 @@ export default function Mypage() {
         localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
         // setUserInfo(updatedUserInfo);
         setLoginUserInfo(updatedUserInfo);
+        setIsLoading(false);
       })
       .catch((err) => console.log(err.message));
   };
@@ -150,7 +151,11 @@ export default function Mypage() {
                         htmlFor="modify-modal"
                         className="btn bg-first text-fourth"
                         onClick={async () => {
-                          setLoginUserInfo((prev) => ({ ...prev, displayName: loginUserInfo.displayName, profileImg: loginUserInfo.profileImg }));
+                          setLoginUserInfo((prev: typeof loginUserInfo) => ({
+                            ...prev,
+                            displayName: loginUserInfo.displayName,
+                            profileImg: loginUserInfo.profileImg,
+                          }));
                           updateUserInfo(loginUserInfo.uid);
                         }}
                       >

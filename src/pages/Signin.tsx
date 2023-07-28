@@ -6,13 +6,13 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 
 import { auth, db } from "../firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
-interface curLoginUser {
-  displayName: string | null;
-  profileImg: string | null;
-  uid: string;
-  email: string;
-  favoriteHistory: object;
-}
+// interface curLoginUser {
+//   displayName: string | null;
+//   profileImg: string | null;
+//   uid: string;
+//   email: string;
+//   favoriteHistory: object;
+// }
 
 export default function Signin(): JSX.Element {
   const moveSignup = MovePage({ url: "/signup" });
@@ -106,24 +106,24 @@ export default function Signin(): JSX.Element {
     }
   };
 
-  const getUserInfo = async (uid: string) => {
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      // setLoginUserInfo({
-      //   displayName: docSnap.data()?.displayName,
-      //   profileImg: docSnap.data()?.profileImg,
-      //   uid: docSnap.data()?.uid,
-      //   email: docSnap.data()?.email,
-      //   favoriteHistory: docSnap.data()?.favoriteHistory,
-      // });
-      setLoginUserInfo({ ...docSnap.data() });
-      localStorage.setItem("loginUserInfo", JSON.stringify({ ...docSnap.data() }));
-    } else {
-      console.log("No such document!");
-    }
-  };
+  // const getUserInfo = async (uid: string) => {
+  //   const docRef = doc(db, "users", uid);
+  //   const docSnap = await getDoc(docRef);
+  //   if (docSnap.exists()) {
+  //     console.log("Document data:", docSnap.data());
+  //     setLoginUserInfo({
+  //       displayName: docSnap.data()?.displayName,
+  //       profileImg: docSnap.data()?.profileImg,
+  //       uid: docSnap.data()?.uid,
+  //       email: docSnap.data()?.email,
+  //       favoriteHistory: docSnap.data()?.favoriteHistory,
+  //     });
+  //     setLoginUserInfo({ ...docSnap.data() });
+  //     localStorage.setItem("loginUserInfo", JSON.stringify({ ...docSnap.data() }));
+  //   } else {
+  //     console.log("No such document!");
+  //   }
+  // };
 
   // const handleOnSignin = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
