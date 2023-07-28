@@ -1,5 +1,5 @@
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { articleListState, loginUserState, userState } from "../store/atom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { articleListState, loginUserState } from "../store/atom";
 import { auth, db } from "../firebase-config";
 import { useEffect, useState } from "react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
@@ -7,44 +7,23 @@ import { useNavigate } from "react-router";
 import Loading from "../components/common/Loading";
 
 export default function Mypage() {
-  const [userInfo, setUserInfo] = useRecoilState(userState);
   const navigate = useNavigate();
   const moveToArticle = (articleId: string) => {
     navigate(`/articles/${articleId}`);
   };
-  const loginUserInfo = JSON.parse(localStorage.getItem("loginUserInfo") as string);
-  const user = auth.currentUser;
-  const uid = user?.uid;
-  const email = user?.email;
+
   const [articles, setArticles] = useRecoilState(articleListState);
-  const myArticleList = articles.filter((article) => article.uid === uid);
+  const [loginUserInfo, setLoginUserInfo] = useRecoilState(loginUserState);
+  const myArticleList = articles.filter((article) => article.uid === loginUserInfo.uid);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const setLoginUserInfo = useSetRecoilState(loginUserState);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const fetchArticleList = async () => {
-      const querySnapshot = await getDocs(collection(db, "articles"));
-      const articles: any[] = [];
-      querySnapshot.forEach((doc) => {
-        articles.push({ id: doc.id, ...doc.data() });
-      });
-      setArticles(articles);
-      setIsLoading(false);
-    };
-    fetchArticleList();
-  }, []);
-
-  useEffect(() => {
-    setUserInfo({ ...userInfo, uid: uid as string, email: email as string });
-  }, []);
 
   const encodeFileToBase64 = (fileBlob: File) => {
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
     return new Promise((resolve) => {
       reader.onloadend = () => {
-        setUserInfo({ ...userInfo, profileImg: reader.result as string });
+        setLoginUserInfo({ ...loginUserInfo, profileImg: reader.result as string });
         resolve(reader.result);
       };
     });
@@ -53,7 +32,7 @@ export default function Mypage() {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const type = e.target.name;
     if (type === "nickname") {
-      setUserInfo((prev) => ({ ...prev, displayName: e.target.value }));
+      setLoginUserInfo((prev) => ({ ...prev, displayName: e.target.value }));
     }
   };
 
@@ -63,10 +42,10 @@ export default function Mypage() {
 
   const updateUserInfo = async (uid: string) => {
     const updatedUserInfo = {
-      displayName: userInfo.displayName,
-      uid: userInfo.uid,
-      email: userInfo.email,
-      profileImg: userInfo.profileImg,
+      displayName: loginUserInfo.displayName,
+      uid: loginUserInfo.uid,
+      email: loginUserInfo.email,
+      profileImg: loginUserInfo.profileImg,
       favoriteHistory: {},
     };
 
@@ -74,7 +53,7 @@ export default function Mypage() {
       .then(() => {
         alert("수정되었습니다.");
         localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
-        setUserInfo(updatedUserInfo);
+        // setUserInfo(updatedUserInfo);
         setLoginUserInfo(updatedUserInfo);
       })
       .catch((err) => console.log(err.message));
@@ -131,16 +110,16 @@ export default function Mypage() {
                           placeholder="내일의 패션리더"
                           className="input input-bordered text-black"
                           name="nickname"
-                          value={userInfo.displayName}
+                          value={loginUserInfo.displayName}
                           onChange={handleOnChange}
                           required
                         />
                       </div>
                       <div className="form-control mt-4">
-                        {userInfo.profileImg ? (
+                        {loginUserInfo.profileImg ? (
                           <div className="avatar">
                             <div className="w-24 rounded-xl">
-                              <img src={userInfo.profileImg as string} alt="프로필이미지" />
+                              <img src={loginUserInfo.profileImg as string} alt="프로필이미지" />
                             </div>
                           </div>
                         ) : (
@@ -171,8 +150,8 @@ export default function Mypage() {
                         htmlFor="modify-modal"
                         className="btn bg-first text-fourth"
                         onClick={async () => {
-                          setUserInfo((prev) => ({ ...prev, displayName: userInfo.displayName, profileImg: userInfo.profileImg }));
-                          updateUserInfo(userInfo.uid);
+                          setLoginUserInfo((prev) => ({ ...prev, displayName: loginUserInfo.displayName, profileImg: loginUserInfo.profileImg }));
+                          updateUserInfo(loginUserInfo.uid);
                         }}
                       >
                         저장
