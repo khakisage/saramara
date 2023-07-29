@@ -1,12 +1,12 @@
 import { useParams } from "react-router";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { articleListState, articleSpecState, loginUserState, userState } from "../store/atom";
+import { articleListState, articleSpecState, loginUserState } from "../store/atom";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
 //import { fetchArticles } from "../components/common/utils";
 import Loading from "../components/common/Loading";
 import { auth, db } from "../firebase-config";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import Comment from "../components/common/Comment";
 
 export interface CommentData {
@@ -34,7 +34,6 @@ export default function Article(): JSX.Element {
   console.log("articleList", articleList);
 
   const [commentList, setCommentList] = useState<CommentData[]>([]);
-  const [comment, setComment] = useState("");
 
   console.log("아티클스펙", articleSpec);
   console.log(userInfo);
@@ -51,14 +50,6 @@ export default function Article(): JSX.Element {
     setIsLoading(false);
   }, []);
 
-  // 댓글 입력 창 onChange 이벤트
-  const commentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setComment(e.target.value);
-  };
-
-  // 수정 필요 -> 로직 분리 해야함.
-  // 댓글 작성 버튼 onClick 이벤트
   // firebase에 생성 및 업데이트 되는 로직을 분리해서, 분기별로 호출
 
   // const updateVote = async () => {

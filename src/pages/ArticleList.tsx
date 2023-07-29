@@ -1,12 +1,8 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { articleListState, pageState } from "../store/atom";
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase-config";
 import Pagination from "react-js-pagination";
 import ".././assets/css/paging.css";
 import { useNavigate } from "react-router";
-import Loading from "../components/common/Loading";
 
 export default function ArticleList(): JSX.Element {
   const articleList = useRecoilValue(articleListState);
