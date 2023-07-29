@@ -1,4 +1,4 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { articleListState, pageState } from "../store/atom";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
@@ -9,41 +9,24 @@ import { useNavigate } from "react-router";
 import Loading from "../components/common/Loading";
 
 export default function ArticleList(): JSX.Element {
-  const [articleList, setArticleList] = useRecoilState(articleListState);
+  const articleList = useRecoilValue(articleListState);
   const [page, setPage] = useRecoilState(pageState);
-  const [pageCount, setPageCount] = useState(0);
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const moveToArticle = (articleId: string) => {
     navigate(`/articles/${articleId}`);
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    const fetchArticleList = async () => {
-      const querySnapshot = await getDocs(collection(db, "articles"));
-      const articles: any = [];
-      querySnapshot.forEach((doc) => {
-        articles.push({ id: doc.id, ...doc.data() });
-      });
-      setArticleList(articles);
-      setPageCount(articles.length);
-      setIsLoading(false);
-    };
-    fetchArticleList();
-  }, []);
+  const pageCount = articleList.length;
 
   const handlePageChange = (pageNum: number) => {
     setPage(pageNum);
   };
-  console.log("articleList", articleList);
   return (
     <>
-      <Loading isLoading={isLoading} />
       <div className="flex flex-col gap-4 min-h-screen bg-second ">
         <div className="flex flex-col h-auto w-full justify-center items-center mt-40 gap-4">
           {articleList.slice((page - 1) * 3, page * 3).map((article) => {
+            console.log("article", article);
             return (
               <div key={article.id} className="card w-1/2 h-52 bg-first shadow-xl flex-row">
                 <figure>

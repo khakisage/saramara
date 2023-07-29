@@ -24,7 +24,8 @@ export default function Main() {
   useEffect(() => {
     const fetchArticleList = async () => {
       const querySnapshot = await getDocs(collection(db, "articles"));
-      const sth = querySnapshot.docs.map((doc) => doc.data());
+      // const sth = querySnapshot.docs.map((doc) => doc.data());
+      const sth = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       const arr = [...sth] as Article[];
       setArticleList(arr as Article[]);
     };
