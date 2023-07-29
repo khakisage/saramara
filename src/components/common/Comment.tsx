@@ -35,7 +35,11 @@ export default function Comment(props: any): JSX.Element {
     setComment(e.target.value);
   };
 
-  const handleDelete = async (commentId: string) => {
+  const handleDelete = async (commentId: string, uid: string) => {
+    if (userInfo.uid !== uid) {
+      alert("본인의 댓글만 삭제할 수 있습니다.");
+      return;
+    }
     try {
       const commentRef = doc(db, "comments", commentId);
       await deleteDoc(commentRef);
@@ -59,7 +63,7 @@ export default function Comment(props: any): JSX.Element {
                   <>
                     <div key={comment.commentId} className="flex flex-row justify-between">
                       <div className="text-fourth w-3/5">{comment.contents}</div>
-                      <button className="text-red-500" onClick={() => handleDelete(comment.commentId as string)}>
+                      <button className="text-red-500" onClick={() => handleDelete(comment.commentId as string, comment.uid)}>
                         삭제
                       </button>
                     </div>
