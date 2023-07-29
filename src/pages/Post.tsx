@@ -36,7 +36,7 @@ export default function Post() {
     reader.readAsDataURL(fileBlob);
     return new Promise((resolve) => {
       reader.onloadend = () => {
-        setArticle({ ...article, image: reader.result as string | null | ArrayBuffer });
+        setArticle({ ...article, image: reader.result as string | undefined });
         resolve(reader.result);
       };
     });
@@ -53,7 +53,7 @@ export default function Post() {
     return () => {
       console.log("removing beforeunload listener");
       window.removeEventListener("beforeunload", listener);
-      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, good: 0, bad: 0 });
+      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: "", good: 0, bad: 0 });
     };
   }, []);
 

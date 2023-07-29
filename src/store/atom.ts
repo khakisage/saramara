@@ -60,7 +60,7 @@ export type ArticleState = {
   content: string;
   category: string;
   price: number;
-  image: string | ArrayBuffer | null;
+  image: string | undefined;
   good: number;
   bad: number;
 };
