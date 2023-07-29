@@ -10,7 +10,7 @@ type Article = {
   title: string;
   content: string;
   uid: string;
-  image: string | null | ArrayBuffer;
+  image: string | undefined;
   price: number;
   nickname: string;
   category: string;

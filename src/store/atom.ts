@@ -76,7 +76,7 @@ export const articleState = atom<ArticleState>({
     price: 0,
     good: 0,
     bad: 0,
-    image: null,
+    image: "",
     // comments: [],
   },
 });
