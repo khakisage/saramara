@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useRecoilState } from "recoil";
-import { userState } from "../store/atom";
 import { auth, db } from "../firebase-config";
 import { MovePage } from "../components/common/utils";
 import { doc, setDoc } from "firebase/firestore";

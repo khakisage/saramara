@@ -53,7 +53,7 @@ export default function Post() {
     return () => {
       console.log("removing beforeunload listener");
       window.removeEventListener("beforeunload", listener);
-      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, comments: [], good: 0, bad: 0 });
+      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: null, good: 0, bad: 0 });
     };
   }, []);
 
