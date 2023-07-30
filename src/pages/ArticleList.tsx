@@ -31,6 +31,7 @@ export default function ArticleList(): JSX.Element {
                 <div className="card-body">
                   <h2 className="card-title">{article.title}</h2>
                   <p>{article.price.toLocaleString()} 원</p>
+                  <p className="card-text">{article.good >= article.bad ? "👍" : "👎"}</p>
                   <div className="card-actions justify-end">
                     <button className="btn btn-primary" onClick={() => moveToArticle(article.id)}>
                       더 보기
