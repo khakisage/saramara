@@ -18,7 +18,6 @@ export const userState = atom({
     profileImg: "",
     favoriteHistory: {},
   },
-  // effects_UNSTABLE: [persistAtom],
 });
 
 export const loginUserState = atom({
@@ -77,7 +76,6 @@ export const articleState = atom<ArticleState>({
     good: 0,
     bad: 0,
     image: "",
-    // comments: [],
   },
 });
 
@@ -100,6 +98,7 @@ export const pageState = atom({
 export const articleSpecState = atom<ArticleState | undefined>({
   key: "articleSpecState",
   default: undefined,
+  effects_UNSTABLE: [persistAtom],
 });
 
 export const commentState = atom({

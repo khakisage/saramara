@@ -52,8 +52,6 @@ export default function Mypage() {
     await updateDoc(doc(db, "users", uid), updatedUserInfo)
       .then(() => {
         alert("수정되었습니다.");
-        localStorage.setItem("loginUserInfo", JSON.stringify(updatedUserInfo));
-        // setUserInfo(updatedUserInfo);
         setLoginUserInfo(updatedUserInfo);
         setIsLoading(false);
       })
