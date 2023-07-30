@@ -53,7 +53,7 @@ export default function Post() {
     return () => {
       console.log("removing beforeunload listener");
       window.removeEventListener("beforeunload", listener);
-      setArticle({ id: "", uid: "", title: "", category: "", price: 0, content: "", image: "", good: 0, bad: 0 });
+      setArticle({ id: "", uid: "", title: "", category: "2", price: 0, content: "", image: "", good: 0, bad: 0 });
     };
   }, []);
 
@@ -96,7 +96,7 @@ export default function Post() {
             </div>
             <div className="form-control" onChange={handleOnChange}>
               <label className="label" htmlFor="category">
-                <select id="category" name="category" className="w-full text-first select select-bordered max-w-xs">
+                <select id="category" name="category" className="w-full text-first select select-bordered max-w-xs" required>
                   <option value="2">신발</option>
                   <option value="3">모자</option>
                   <option value="4">악세사리</option>
