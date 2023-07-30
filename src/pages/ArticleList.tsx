@@ -25,6 +25,7 @@ export default function ArticleList(): JSX.Element {
 
   const filteredArticleList = articleList.filter((article) => {
     // 카테고리 선택된 값과 일치하는 게시글만 필터링
+    if (categoryFilter === "1") return article;
     return article.category === categoryFilter;
   });
 
@@ -37,10 +38,11 @@ export default function ArticleList(): JSX.Element {
       <div className="flex flex-col gap-4 min-h-screen bg-second ">
         <div className="flex flex-col h-auto w-full justify-center items-center mt-40 gap-4">
           <select value={categoryFilter} onChange={handleCategoryChange} className="select select-bordered text-first">
-            <option value="2">신발</option>
-            <option value="3" selected>
-              모자
+            <option value="1" selected>
+              전체
             </option>
+            <option value="2">신발</option>
+            <option value="3">모자</option>
             <option value="4">악세사리</option>
             <option value="5">의류</option>
           </select>
