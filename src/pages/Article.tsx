@@ -3,11 +3,11 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { articleListState, articleSpecState, loginUserState } from "../store/atom";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
-//import { fetchArticles } from "../components/common/utils";
 import Loading from "../components/common/Loading";
 import { auth, db } from "../firebase-config";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import Comment from "../components/common/Comment";
+import Vote from "../components/common/Vote";
 
 export interface CommentData {
   uid: string; // 댓글을 작성한 유저의 uid
@@ -24,7 +24,7 @@ export default function Article(): JSX.Element {
 
   const [articleSpec, setArticleSpec] = useRecoilState(articleSpecState); // 필요
 
-  const [isLoading, setIsLoading] = useState<boolean>(false); // 애매함
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const userInfo = useRecoilValue(loginUserState);
   const user = auth.currentUser;
@@ -49,80 +49,6 @@ export default function Article(): JSX.Element {
     setArticleSpec(matchedArticle || undefined);
     setIsLoading(false);
   }, []);
-
-  // firebase에 생성 및 업데이트 되는 로직을 분리해서, 분기별로 호출
-
-  // const updateVote = async () => {
-  //   await setDoc(doc(db, 'articles', articleId), articleSpec);
-  // }
-
-  // const typeButtonClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   const event = e.target as HTMLButtonElement;
-  //   const updatedArticleSpec = {
-  //     ...articleSpec,
-  //   };
-  //   if (event.value === "1") {
-  //     // 좋아요 버튼을 눌렀을 때,
-  //     // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 없다면,
-  //     // 현재 게시물의 id를 loginUserInfo의 favoriteHistory에
-  //     // {id: articleSpec?.id, good: articleSpec?.good} 형태로 추가해준다.
-  //     // firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, good를 1 증가시킨다.
-  //     // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 있다면,
-  //     // alert를 띄워준다.
-  //     if (!Object.keys(loginUserInfo.favoriteHistory).includes(articleSpec?.id as string)) {
-  //       // loginUserInfo.favoriteHistory는 객체
-  //       loginUserInfo.favoriteHistory[articleSpec!.id] = articleSpec?.good;
-  //       updatedArticleSpec.good! += 1;
-  //       await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
-  //       localStorage.setItem("loginUserInfo", JSON.stringify(loginUserInfo));
-  //     } else {
-  //       alert("이미 선택하였습니다.");
-  //     }
-  //     console.log("좋아요");
-  //     //updatedArticleSpec.good = articleSpec?.good ? articleSpec.good + 1 : 1;
-  //   } else if (event.value === "2") {
-  //     // 싫어요 버튼을 눌렀을 때,
-  //     // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 없다면,
-  //     // 현재 게시물의 id를 loginUserInfo의 favoriteHistory에
-  //     // {id: articleSpec?.id, bad: articleSpec?.bad} 형태로 추가해준다.
-  //     // firebase의 articles collection 에 현재 게시물의 정보가 담긴 문서에 접근하여, bad를 1 증가시킨다.
-  //     // loginUserInfo의 favoriteHistory에 현재 게시물의 id가 있다면,
-  //     // alert를 띄워준다.
-  //     if (!Object.keys(loginUserInfo.favoriteHistory).includes(articleSpec?.id as string)) {
-  //       loginUserInfo.favoriteHistory[articleSpec!.id] = articleSpec?.bad;
-  //       updatedArticleSpec.bad! += 1;
-  //       await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
-  //       await setDoc(doc(db, "users", uid), loginUserInfo);
-  //       localStorage.setItem("loginUserInfo", JSON.stringify(loginUserInfo));
-  //     } else {
-  //       alert("이미 선택하였습니다.");
-  //       console.log("싫어요");
-  //     }
-
-  //     // updatedArticleSpec.bad = articleSpec?.bad ? articleSpec.bad + 1 : 1;
-  //   }
-
-  //   await setDoc(doc(db, "articles", articleId), updatedArticleSpec);
-  // };
-
-  // const updateComment = async () => {
-
-  // }
-
-  // const handleSaramara = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   // e.preventDefault();
-  //   if (!uid) {
-  //     alert("로그인이 필요합니다.");
-  //     return;
-  //   }
-  //   if (articleSpec?.uid === loginUserInfo.uid) {
-  //     alert("자신의 게시물에는 좋아요를 누를 수 없습니다.");
-  //     return;
-  //   } else {
-  //     typeButtonClick(e);
-  //   }
-  // };
 
   useEffect(() => {
     const loadComments = async () => {
@@ -185,60 +111,7 @@ export default function Article(): JSX.Element {
             <h1 className="title-font sm:text-4xl text-3xl mb-2 font-medium text-fourth">{articleSpec?.title}</h1>
             <h2 className="mb-4 leading-relaxed">{articleSpec?.price.toLocaleString()} 원</h2>
             <p className="mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(articleSpec?.content || "") }}></p>
-            <p className="mb-2 leading-relaxed">{/* 사라 버튼 클릭 수, 마라 버튼 클릭 수 */}</p>
-            <div className="felx justify-center flex-row gap-8">
-              <button
-                value={1}
-                className="text-white bg-red-500 border-0 mr-3 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg"
-                // onClick={handleSaramara}
-              >
-                사라
-              </button>
-              <span className="text-fourth mr-3">{articleSpec?.good}</span>
-              <button
-                value={2}
-                className="text-white bg-red-500 border-0 mr-3 py-2 px-6 focus:outline-none hover:bg-red-600 rounded text-lg"
-                // onClick={handleSaramara}
-              >
-                마라
-              </button>
-              <span className="text-fourth mr-3">{articleSpec?.bad}</span>
-            </div>
-            {/* <div className="container mx-auto flex px-5 pt-2 items-center justify-center flex-col">
-              <div className="card w-4/5 bg-first shadow-xl">
-                <form className="card-body" onSubmit={handleComment}>
-                  <label htmlFor="comment" className="text-fourth mb-3 text-left text-2xl">
-                    여러분의 생각을 들려주세요!
-                  </label>
-                  {commentList &&
-                    commentList.map((comment: CommentData) => {
-                      return (
-                        <>
-                          <div key={comment.uid} className="flex flex-row justify-between">
-                            <div className="text-fourth w-3/5">{comment.contents}</div>
-                            <button className="text-red-500" onClick={handleCommentDelete(comment.id)}>
-                              삭제
-                            </button>
-                          </div>
-                        </>
-                      );
-                    })}
-                  <div className="flex flex-row gap-4">
-                    <input
-                      id="comment"
-                      type="text"
-                      placeholder="Type here"
-                      className="input input-bordered w-full max-w-xs text-first"
-                      value={comment}
-                      onChange={commentOnChange}
-                    />
-                    <button type="submit" className="btn btn-primary bg-third">
-                      등록
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div> */}
+            <Vote userInfo={userInfo} articleSpec={articleSpec} setArticleSpec={setArticleSpec} />
           </div>
           <Comment setCommentList={setCommentList} commentList={commentList} userInfo={userInfo} articleId={articleId} />
         </div>
