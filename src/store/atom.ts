@@ -110,3 +110,8 @@ export const commentState = atom({
     displayName: "",
   },
 });
+
+export const categoryState = atom<string>({
+  key: "categoryState",
+  default: "2",
+});
