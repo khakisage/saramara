@@ -51,8 +51,8 @@ export default function Comment(props: any): JSX.Element {
 
   return (
     <>
-      <div className="container mx-auto flex px-5 pt-2 items-center justify-center flex-col">
-        <div className="card w-4/5 bg-first shadow-xl">
+      <div className="container mx-auto flex px-5 pt-2 mt-4 items-center justify-center flex-col">
+        <div className="card w-3/5 bg-first shadow-xl">
           <div className="card-body">
             <label htmlFor="comment" className="text-fourth mb-3 text-left text-2xl">
               여러분의 생각을 들려주세요!
@@ -62,7 +62,9 @@ export default function Comment(props: any): JSX.Element {
                 return (
                   <>
                     <div key={comment.commentId} className="flex flex-row justify-between">
-                      <div className="text-fourth w-3/5">{comment.contents}</div>
+                      <div className="text-fourth w-3/5 bg-second collapse">
+                        <div className="pl-3 pt-2 mb-1">{comment.contents}</div>
+                      </div>
                       <button className="text-red-500" onClick={() => handleDelete(comment.commentId as string, comment.uid)}>
                         삭제
                       </button>
@@ -70,7 +72,7 @@ export default function Comment(props: any): JSX.Element {
                   </>
                 );
               })}
-            <form className="flex flex-row gap-4 justify-center" onSubmit={handleComment}>
+            <form className="flex flex-row gap-4 justify-center mt-3" onSubmit={handleComment}>
               <input
                 id="comment"
                 type="text"
