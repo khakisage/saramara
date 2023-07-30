@@ -20,7 +20,7 @@
 
 ### 배포 링크
 
-[사라마라](https://main--saramara.netlify.app/) (추천 기능 미구현)
+[사라마라](https://main--saramara.netlify.app/)
 
 ## page 기능 구현
 
@@ -73,3 +73,5 @@
 ### 프로젝트 기간 : 2023/07/03 ~ 2023/07/27
 
 ### 부트캠프 : 제로베이스 프론트엔드 스쿨
+
+### 프로젝트 노션 페이지 : [Notion](https://volcano-hubcap-428.notion.site/43daaa0be2e141908274ee4735f4b311?pvs=4)
