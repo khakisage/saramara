@@ -1950,6 +1950,11 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
+"@types/recoilize@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@types/recoilize/-/recoilize-0.8.0.tgz#7351f7a048bcef9c712f39d05696ce7fd2a414fe"
+  integrity sha512-h4Rm8J/8XH1wZIZC5gOeN9EDJWBhK2sLEs5voSHyZKB5cynIDbohuYS6rEdv2kNPrwoYQyt7D3yeXI9ODvZDlw==
+
 "@types/scheduler@*":
   version "0.16.3"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.3.tgz#cef09e3ec9af1d63d2a6cc5b383a737e24e6dcf5"
@@ -3699,6 +3704,11 @@ recoil@^0.7.7:
   integrity sha512-8Og5KPQW9LwC577Vc7Ug2P0vQshkv1y3zG3tSSkWMqkWSwHmE+by06L8JtnGocjW6gcCvfwB3YtrJG6/tWivNQ==
   dependencies:
     hamt_plus "1.0.2"
+
+recoilize@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/recoilize/-/recoilize-3.2.0.tgz#aaf4c76390293a105a73b74dced7a49dfbeb1c84"
+  integrity sha512-2J0SEzefl8rKe5iaJ2vVg6AgWy5aQ8NFPfZbZfXagycF5ohUzCQA2c2SZDz5jtZfYmendR8hsILstPyofxfg7g==
 
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
