@@ -1,9 +1,10 @@
-import { collection, getDocs } from "firebase/firestore";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../firebase-config";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { articleListState } from "../store/atom";
+import { collection, getDocs } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { db } from '../firebase-config';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { articleListState } from '../store/atom';
+import TypingTitle from '../components/common/Title';
 
 type Article = {
   id: string;
@@ -17,34 +18,49 @@ type Article = {
   good: number;
   bad: number;
 };
+
+export type Title = {
+  count: number;
+  setCount: (value: number) => void;
+  mainTitle: string;
+  setMainTitle: (value: string) => void;
+  readonly titleText: string;
+};
+
 export default function Main() {
   const setArticleList = useSetRecoilState(articleListState);
   const articleList = useRecoilValue(articleListState);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchArticleList = async () => {
-      const querySnapshot = await getDocs(collection(db, "articles"));
+      const querySnapshot = await getDocs(collection(db, 'articles'));
       // const sth = querySnapshot.docs.map((doc) => doc.data());
-      const sth = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const sth = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       const arr = [...sth] as Article[];
       setArticleList(arr as Article[]);
     };
     fetchArticleList();
   }, []);
 
-  console.log("Mainpage 내부 articleList", articleList);
+  console.log('Mainpage 내부 articleList', articleList);
 
   return (
     <>
       <div className="hero min-h-screen bg-second">
-        <div className="hero-content text-center">
-          <div className="max-w-md">
-            <h1 className="text-5xl text-fourth font-bold">살까? 말까?</h1>
-            <p className="py-6 text-fourth">다른 사람들의 생각은 어떨까요? 고민될 땐, 물어봐요!</p>
-            <button className="btn bg-third text-fourth hover:bg-third2 border-none" onClick={() => navigate("/articles")}>
-              살펴보기
-            </button>
+        <div className="hero-content text-center flex-col">
+          <div className="h-12">
+            <TypingTitle />
           </div>
+          <button
+            className="btn bg-third text-fourth hover:bg-third2 border-none"
+            onClick={() => navigate('/articles')}
+          >
+            살펴보기
+          </button>
         </div>
       </div>
     </>
