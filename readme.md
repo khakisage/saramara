@@ -58,7 +58,7 @@
 
 ![게시글페이지](https://github.com/khakisage/saramara/assets/91720916/afa575ca-ce26-42c6-9a7a-c94355c3ca02)
 
-- 게시글에 대한 투표 기능 (현재 일부 구현)
+- 게시글에 대한 투표 기능
 - 게시글에 대한 댓글 기능
 
 ### 게시글 작성
