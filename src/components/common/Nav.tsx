@@ -4,7 +4,6 @@ import { loginState, loginUserState, userState } from '../../store/atom';
 import { useNavigate } from 'react-router';
 import { auth } from '../../firebase-config';
 import Search from './Search';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 export default function Nav(): JSX.Element {
