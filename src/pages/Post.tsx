@@ -91,6 +91,10 @@ export default function Post() {
   // firestore(db)에 데이터 저장
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!articleData.title || !articleData.price || !articleData.image) {
+      alert('제목, 사진, 가격은 필수 입력 항목입니다.');
+      return;
+    }
     try {
       // firestore(db)에 데이터 저장
       await addDoc(collection(db, 'articles'), {
@@ -144,6 +148,7 @@ export default function Post() {
                   name="price"
                   placeholder="가격을 입력하세요."
                   className="w-full text-first"
+                  style={{ appearance: 'textfield' }}
                 />
               </label>
             </div>
