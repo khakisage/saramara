@@ -70,7 +70,7 @@ export default function Article(): JSX.Element {
   return (
     <>
       <Loading isLoading={isLoading} />
-      <section className="bg-second text-fourth body-font h-[100vh]">
+      <section className="bg-second text-fourth h-[100vh]">
         <div className="flex items-center justify-center absolute top-1 right-1 mt-20 mb-5 mr-60">
           {articleSpec?.uid === userInfo.uid ? (
             <button
@@ -83,43 +83,41 @@ export default function Article(): JSX.Element {
             <></>
           )}
         </div>
-        <div className="container mx-auto flex px-5 pt-24 flex-col items-center">
-          <div className="flex flex-row">
-            <img
-              className="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded mr-8"
-              alt="hero"
-              src={articleSpec?.image}
+
+        <div className="flex flex-col h-[100vh] items-center justify-center">
+          <img
+            className="object-cover object-center rounded w-96"
+            alt="hero"
+            src={articleSpec?.image}
+          />
+          <div className="mt-10">
+            <h1 className="title-font sm:text-xl text-3xl mb-2 font-medium text-fourth">
+              {articleSpec?.title}
+            </h1>
+            <h2 className="mb-4 leading-relaxed">
+              가격 : {articleSpec?.price.toLocaleString()} 원
+            </h2>
+            <p
+              className="mb-4 leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(articleSpec?.content || ''),
+              }}
+            ></p>
+            <Vote
+              userInfo={userInfo}
+              articleSpec={articleSpec}
+              setArticleSpec={setArticleSpec}
             />
+          </div>
+          <div className="text-center xl2:w-1/2 w-full flex flex-col justify-center">
             <div>
-              <h1 className="title-font sm:text-xl text-3xl mb-2 font-medium text-fourth">
-                {articleSpec?.title}
-              </h1>
-              <h2 className="mb-4 leading-relaxed">
-                가격 : {articleSpec?.price.toLocaleString()} 원
-              </h2>
-              <p
-                className="mb-4 leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(articleSpec?.content || ''),
-                }}
-              ></p>
-              <Vote
+              <Comment
+                setCommentList={setCommentList}
+                commentList={commentList}
                 userInfo={userInfo}
-                articleSpec={articleSpec}
-                setArticleSpec={setArticleSpec}
+                articleId={articleId}
               />
             </div>
-          </div>
-        </div>
-
-        <div className="text-center lg:w-2/3 w-full flex flex-col">
-          <div>
-            <Comment
-              setCommentList={setCommentList}
-              commentList={commentList}
-              userInfo={userInfo}
-              articleId={articleId}
-            />
           </div>
         </div>
       </section>
